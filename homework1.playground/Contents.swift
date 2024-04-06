@@ -88,13 +88,18 @@ firstVowelIndex("yes")
 
 //find numb in string
 func findNumbInString(_ arrOfString: [String]) -> [String] {
-	let result: [String] = arrOfString.map { str in
-		for char in str {
-			guard let _ = Int("\(char)") else { return }
-			return str
+	var numbersInString = [String]()
+	arrOfString.filter { str in
+		str.filter { char in
+			guard let _ = Int("\(char)") else { return false }
+			if !numbersInString.contains(str) {
+				numbersInString.append(str)
+			}
+			return true
 		}
+		return true
 	}
-	return result
+	return numbersInString
 }
 
-findNumbInString(["1a", "a", "2b", "b"])
+findNumbInString(["1a", "a", "2b", "b2vvv"])
