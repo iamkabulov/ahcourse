@@ -1,2 +1,2 @@
-# ahcourse
+# ASTANA HUB iOS COURSE
 ### KABULOV NURSULTAN
