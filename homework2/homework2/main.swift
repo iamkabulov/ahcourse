@@ -321,3 +321,455 @@ carEnc.getInfo()
 carEnc.setInfo(brand: "TOYOTA", model: "K5")
 carEnc.getInfo()
 
+
+//MARK: - INHERITANCE
+
+///Создайте базовый класс "Фигура" с методом "вычислить площадь". Создайте подклассы "Квадрат", "Прямоугольник" и "Треугольник", которые унаследуют базовый класс "Фигура". Реализуйте метод "вычислить площадь" для каждого подкласса, учитывая их уникальные свойства (например, стороны квадрата, ширина и высота прямоугольника, основание и высота треугольника). Создайте объекты каждого подкласса и вызовите метод "вычислить площадь" для каждого из них.
+
+class Shape {
+
+	func calculateArea() {
+	}
+}
+
+class Triangle: Shape {
+	private let side: Int
+	private let height: Int
+
+	init(side: Int, height: Int) {
+		self.side = side
+		self.height = height
+	}
+
+	override func calculateArea() {
+		print((self.side * self.height) / 2)
+	}
+}
+
+class RectangleInheritance: Shape {
+	private let height: Int
+	private let width: Int
+
+	init(height: Int, width: Int) {
+		self.height = height
+		self.width = width
+	}
+
+	override func calculateArea() {
+		print(self.height * self.width)
+	}
+}
+
+class SquareInheritance: Shape {
+	private let side: Int
+
+	init(side: Int) {
+		self.side = side
+	}
+
+	override func calculateArea() {
+		print(self.side * self.side)
+	}
+}
+
+
+let tri = Triangle(side: 10, height: 5)
+let rec = RectangleInheritance(height: 10, width: 20)
+let squ = SquareInheritance(side: 40)
+
+tri.calculateArea()
+rec.calculateArea()
+squ.calculateArea()
+
+
+///Создайте базовый класс "Транспортное средство" с методом "движение". Создайте подклассы "Автомобиль", "Велосипед" и "Мотоцикл", которые унаследуют базовый класс "Транспортное средство". Реализуйте метод "движение" для каждого подкласса, который будет выводить сообщение о способе движения соответствующего транспортного средства. Создайте объекты каждого подкласса и вызовите метод "движение" для каждого из них.
+
+class Vehicle {
+
+	func drive() {
+
+	}
+}
+
+class CarInheritance: Vehicle {
+
+	override func drive() {
+		print("Car is driving!")
+	}
+}
+
+class BikeInheritance: Vehicle {
+
+	override func drive() {
+		print("Bike is driving!")
+	}
+}
+
+class MotocycleInheritance: Vehicle {
+
+	override func drive() {
+		print("Motocycle is driving!")
+	}
+}
+
+let carInh = CarInheritance()
+let bikeInh = BikeInheritance()
+let motocycleInh = MotocycleInheritance()
+
+carInh.drive()
+bikeInh.drive()
+motocycleInh.drive()
+
+
+///Создайте базовый класс "Животное" с методом "издать звук". Создайте подклассы "Кот", "Собака" и "Лев", которые унаследуют базовый класс "Животное". Реализуйте метод "издать звук" для каждого подкласса, который будет выводить соответствующий звук каждого животного. Создайте объекты каждого подкласса и вызовите метод "издать звук" для каждого из них.
+
+class Animal {
+
+	func makeSound() {
+
+	}
+}
+
+class Cat: Animal {
+
+	override func makeSound() {
+		print("Meow!")
+	}
+}
+
+class Dog: Animal {
+
+	override func makeSound() {
+		print("Woo!")
+	}
+}
+
+class Lion: Animal {
+
+	override func makeSound() {
+		print("Roar!")
+	}
+}
+
+let cat = Cat()
+let dog = Dog()
+let lion = Lion()
+
+cat.makeSound()
+dog.makeSound()
+lion.makeSound()
+
+
+///Создайте базовый класс "Фрукт" с методом "съесть". Создайте подклассы "Яблоко", "Груша" и "Апельсин", которые унаследуют базовый класс "Фрукт". Реализуйте метод "съесть" для каждого подкласса, который будет выводить сообщение о том, что фрукт съеден. Создайте объекты каждого подкласса и вызовите метод "съесть" для каждого из них.
+
+class Fruit {
+
+	func eat() {
+		print("Fruit was eaten")
+	}
+}
+
+class Apple: Fruit {
+
+	override func eat() {
+		print("Apple was eaten")
+	}
+}
+
+class Pear: Fruit {
+
+	override func eat() {
+		print("Pear was eaten")
+	}
+}
+
+class Orange: Fruit {
+
+	override func eat() {
+		print("Orange was eaten")
+	}
+}
+
+
+let apple = Apple()
+let pear = Pear()
+let orange = Orange()
+
+apple.eat()
+pear.eat()
+orange.eat()
+
+///Создайте базовый класс "Фигура" с методом "нарисовать". Создайте подклассы "Круг", "Квадрат" и "Треугольник", которые унаследуют базовый класс "Фигура". Реализуйте метод "
+
+class ShapeDraw {
+
+	func draw() {
+		print("Drawing")
+	}
+}
+
+class CircleInh: ShapeDraw {
+
+	override func draw() {
+		print("Circle are drawing")
+	}
+}
+
+class SquareInh: ShapeDraw {
+
+	override func draw() {
+		print("Square are drawing")
+	}
+}
+
+class TriangleInh: ShapeDraw {
+
+	override func draw() {
+		print("Triangle are drawing")
+	}
+}
+
+let circle = CircleInh()
+let square = SquareInh()
+let triangle = TriangleInh()
+
+circle.draw()
+square.draw()
+triangle.draw()
+
+
+//MARK: - Difficult tasks
+///Создайте класс "Библиотека", который имеет свойство "каталог книг". Реализуйте методы для добавления книги в каталог, удаления книги из каталога и поиска книги по названию или автору. Создайте объект библиотеки и проверьте работу методов.
+
+class Library {
+	private var books: [String: String]
+
+	init(books: [String : String]) {
+		self.books = books
+	}
+
+	func addNewBookToLibrary(name: String, author: String) {
+		books[name] = author
+	}
+
+	func removeBookFromLibrary(name: String) {
+		books.removeValue(forKey: name)
+	}
+
+	func findBookBy(name: String) {
+		let result = books.filter { (key: String, value: String) in
+			if name == key {
+				print("\(key). \(value)")
+				return true
+			}
+			return false
+		}
+
+		if result.isEmpty {
+			print("There is no books named: \(name)")
+		}
+	}
+
+	func findBookBy(author: String) {
+		let result = books.filter { (key: String, value: String) in
+			if author == value {
+				print("\(key). \(value)")
+				return true
+			}
+			return false
+		}
+
+		if result.isEmpty {
+			print("There is no books by: \(author)")
+		}
+	}
+}
+
+let books = [
+	"Harry Potter": "J.K. Rowling",
+	"The Great Gatsby": "F. Scott Fitzgerald",
+	"To Kill a Mockingbird": "Harper Lee",
+	"1984": "George Orwell"
+]
+
+let lib = Library(books: books)
+
+lib.addNewBookToLibrary(name: "Qara sozder", author: "Abay.K")
+lib.addNewBookToLibrary(name: "Aq sozder", author: "Abay.K")
+lib.removeBookFromLibrary(name: "Aq sozder")
+lib.findBookBy(author: "Abay.K")
+lib.findBookBy(author: "Ronaldo")
+lib.findBookBy(name: "1984")
+lib.findBookBy(name: "1983")
+
+
+///Создайте класс "Задача", который имеет свойства "название", "описание" и "статус" (например, "выполнено", "в процессе", "не выполнено"). Реализуйте методы для изменения статуса задачи и вывода информации о задаче. Создайте объекты задач и проверьте работу методов.
+
+enum Status {
+	case WIP
+	case DONE
+	case NOT_DONE
+}
+
+class Tasks {
+	private var name: String
+	private var description: String
+	private var state: Status = Status.NOT_DONE
+
+	init(name: String, description: String) {
+		self.name = name
+		self.description = description
+	}
+
+	func changeStatus(_ state: Status) {
+		self.state = state
+		print("\nTask: \(self.name) \nDescription: \(self.description)\nStatus: \(self.state)\n")
+	}
+}
+
+let taskOne = Tasks(name: "Develop UI", description: "Need to implement view")
+taskOne.changeStatus(Status.NOT_DONE)
+
+
+///Создайте класс "Магазин", который имеет свойство "инвентарь" (список товаров) и методы для добавления товара в инвентарь, удаления товара из инвентаря и поиска товара по названию или категории. Каждый товар должен иметь свойства "название", "цена" и "количество на складе". Создайте объект магазина и проверьте работу методов.
+struct Product {
+	let name: String
+	let price: Double
+	let quantity: Int
+}
+class Store {
+	private var goods: [Product]
+
+	init(goods: [Product]) {
+		self.goods = goods
+	}
+
+	func addProduct(name: String, price: Double, quantity: Int) {
+		let newProduct = Product(name: name, price: price, quantity: quantity)
+		self.goods.append(newProduct)
+	}
+
+	func removeProduct(name: String) {
+		self.goods.removeAll { $0.name == name }
+	}
+
+	func findProductByName(name: String) {
+		let result = self.goods.filter { $0.name == name }
+		if result.isEmpty {
+			print("There is no goods named: \(name)")
+			return
+		}
+		print(result)
+	}
+}
+
+let equipments = [
+	Product(name: "Knife", price: 100.0, quantity: 1),
+	Product(name: "Fork", price: 120.0, quantity: 2),
+	Product(name: "Spoon", price: 150.0, quantity: 5),
+		]
+
+let shop = Store(goods: equipments)
+shop.addProduct(name: "Plate", price: 155.0, quantity: 10)
+shop.findProductByName(name: "Fork")
+shop.removeProduct(name: "Fork")
+shop.findProductByName(name: "Fork")
+shop.findProductByName(name: "Plate")
+
+
+///Создайте класс "Банк", который имеет свойства "клиенты" (список клиентов) и методы для открытия нового банковского счета для клиента, закрытия существующего счета и перевода денег между счетами клиентов. Каждый клиент должен иметь свойства "имя" и "счет". Создайте объект банка и проверьте работу методов.
+
+struct Client {
+	let name: String
+	let account: UUID
+	var balance: Double = 0.0
+
+	mutating func withdraw(amount: Double) {
+		self.balance -= amount
+	}
+
+	mutating func refill(amount: Double) {
+		self.balance += amount
+	}
+}
+
+class Bank {
+	var clients: [Client]
+
+	init(clients: [Client]) {
+		self.clients = clients
+	}
+
+	func openAccount(client: String) {
+		let client = Client(name: client, account: UUID())
+		self.clients.append(client)
+	}
+
+	func closeAccount(client: String) {
+		self.clients.removeAll { $0.name == client }
+	}
+
+	func transfer(from: String, to: String, amount: Double) {
+		var fromIndex: Int?
+		var toIndex: Int?
+		for (key, client) in clients.enumerated() {
+			if client.name == from {
+				fromIndex = key
+			} else if client.name == to {
+				toIndex = key
+			}
+		}
+		guard let fromIndex = fromIndex, let toIndex = toIndex else { return print("\nCan not make transfer! There is error")}
+		self.clients[fromIndex].withdraw(amount: amount)
+		self.clients[toIndex].refill(amount: amount)
+	}
+}
+let clients = [
+	Client(name: "Hypc", account: UUID(), balance: 200.0),
+	Client(name: "Nurzhan", account: UUID(), balance: 150.0),
+	Client(name: "Anton", account: UUID(), balance: 180.0),
+	Client(name: "Petr", account: UUID(), balance: 190.0)
+]
+let bank = Bank(clients: clients)
+bank.openAccount(client: "John")
+bank.closeAccount(client: "Petr")
+bank.transfer(from: "Petr", to: "John", amount: 10.0)
+
+bank.transfer(from: "Anton", to: "John", amount: 10.0)
+print(bank.clients)
+bank.transfer(from: "John", to: "Anton", amount: 10.0)
+print(bank.clients)
+
+///Создайте класс "Игра", который имеет свойство "игроки" (список игроков) и методы для добавления нового игрока, удаления игрока и определения победителя (например, игрок с наибольшим количеством очков). Каждый игрок должен иметь свойства "имя" и "очки". Создайте объект игры и проверьте работу методов.
+
+class Game {
+	var gamers: [String: Int]
+
+	init(gamers: [String : Int]) {
+		self.gamers = gamers
+	}
+
+	func addNewGamer(name: String) {
+		self.gamers[name] = 0
+	}
+
+	func removeGamer(name: String) {
+		self.gamers.removeValue(forKey: name)
+	}
+
+	func findWinner() {
+		guard let result = self.gamers.max(by: { $0.value < $1.value }) else { return print("Something went wrong")}
+		print("Winner \(result.key) with points:\(result.value)")
+	}
+}
+let gamers = [
+	"Hypc": 10,
+	"Anton": 9,
+	"Petr": 6,
+	"Ackap": 7
+]
+let game = Game(gamers: gamers)
+game.addNewGamer(name: "Epgoc")
+game.removeGamer(name: "Petr")
+print(game.gamers)
+game.findWinner()
