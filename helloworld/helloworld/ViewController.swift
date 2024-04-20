@@ -9,22 +9,39 @@ import UIKit
 
 class ViewController: UIViewController {
 
+	private var isPlayer1: Bool = true
 
-	@IBOutlet weak var helloWorldLabel: UILabel!
+	@IBOutlet var xoButtons: [UIButton]!
+
+	@IBOutlet weak var restartButton: UIButton!
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		// Do any additional setup after loading the view.
 	}
 
-	@IBAction func helloWorldButton(_ sender: Any) {
-		if helloWorldLabel.text == "" {
-			helloWorldLabel.text = "Hello World!"
+	@IBAction func clickButton(_ sender: UIButton) {
+		if isPlayer1 {
+			isPlayer1 = false
+			sender.setTitle("❌", for: .normal)
+			sender.isEnabled = false
 		} else {
-			helloWorldLabel.text = ""
+			isPlayer1 = true
+			sender.setTitle("⭕️", for: .normal)
+			sender.isEnabled = false
 		}
-
 	}
 
+
+	@IBAction func restartButton(_ sender: UIButton) {
+		for i in xoButtons {
+			i.setTitle("", for: .normal)
+			i.isEnabled = true
+		}
+	}
+
+	func findWinner() {
+
+	}
 }
 
