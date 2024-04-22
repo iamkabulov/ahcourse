@@ -171,6 +171,7 @@
                     </view>
                     <connections>
                         <outlet property="restartButton" destination="SQf-Hw-Ntp" id="Da3-DM-b0X"/>
+                        <outlet property="status" destination="eSV-UT-9mw" id="x8v-Fi-e3O"/>
                         <outletCollection property="xoButtons" destination="hdV-s5-85B" collectionClass="NSMutableArray" id="TD6-9G-c8F"/>
                         <outletCollection property="xoButtons" destination="R5w-xb-d1B" collectionClass="NSMutableArray" id="Sjg-Fr-keS"/>
                         <outletCollection property="xoButtons" destination="dYc-wA-0dp" collectionClass="NSMutableArray" id="3Tb-Cp-7tE"/>
