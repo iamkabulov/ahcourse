@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Eeg-fp-hRR">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -154,7 +155,7 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="TIC TAC TOE" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eSV-UT-9mw">
-                                <rect key="frame" x="111.66666666666667" y="89" width="169.66666666666663" height="36"/>
+                                <rect key="frame" x="111.66666666666667" y="133" width="169.66666666666663" height="36"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="30"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -169,6 +170,7 @@
                             <constraint firstItem="eSV-UT-9mw" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="oES-CY-Apf"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="Wvw-aM-C0T"/>
                     <connections>
                         <outlet property="restartButton" destination="SQf-Hw-Ntp" id="Da3-DM-b0X"/>
                         <outlet property="status" destination="eSV-UT-9mw" id="x8v-Fi-e3O"/>
@@ -185,10 +187,108 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-25.190839694656489" y="3.5211267605633805"/>
+            <point key="canvasLocation" x="5535.1145038167933" y="3.5211267605633805"/>
+        </scene>
+        <!--START GAME-->
+        <scene sceneID="Wnj-qn-MWe">
+            <objects>
+                <viewController id="3ps-qr-d1O" customClass="StartViewController" customModule="helloworld" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="HhA-mW-fcY">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="27s-Zp-SSZ">
+                                <rect key="frame" x="106" y="308.66666666666669" width="181" height="35"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" title="GAME WITH FRIEND"/>
+                                <connections>
+                                    <segue destination="BYZ-38-t0r" kind="show" identifier="withHuman" id="kQl-pj-Caq"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b8S-Ca-JLw">
+                                <rect key="frame" x="89" y="393.66666666666669" width="215" height="35"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="filled" title="GAME WITH COMPUTER"/>
+                                <connections>
+                                    <segue destination="BYZ-38-t0r" kind="show" id="GDj-JQ-Cdm"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="qr6-v5-CFH"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="b8S-Ca-JLw" firstAttribute="top" secondItem="27s-Zp-SSZ" secondAttribute="bottom" constant="50" id="Rno-nj-JHP"/>
+                            <constraint firstItem="27s-Zp-SSZ" firstAttribute="centerX" secondItem="HhA-mW-fcY" secondAttribute="centerX" id="SAL-4D-vd6"/>
+                            <constraint firstItem="b8S-Ca-JLw" firstAttribute="centerX" secondItem="HhA-mW-fcY" secondAttribute="centerX" id="jKq-qH-321"/>
+                            <constraint firstItem="27s-Zp-SSZ" firstAttribute="centerY" secondItem="HhA-mW-fcY" secondAttribute="centerY" constant="-100" id="yhD-36-GQN"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="START GAME" id="BqS-75-HLI"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="f1F-gL-6BF" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4548.8549618320612" y="3.5211267605633805"/>
+        </scene>
+        <!--Tic Tac Toe-->
+        <scene sceneID="y8D-ae-See">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="kon-Ej-mmj" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Tic Tac Toe" image="grid" catalog="system" id="spk-EQ-bfX"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="lze-f4-3ab">
+                        <rect key="frame" x="0.0" y="59" width="393" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="3ps-qr-d1O" kind="relationship" relationship="rootViewController" id="0oe-mw-lef"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="TaN-bK-Ghu" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3622.1374045801526" y="3.5211267605633805"/>
+        </scene>
+        <!--Tab Bar Controller-->
+        <scene sceneID="3jv-5d-aAI">
+            <objects>
+                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="Eeg-fp-hRR" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="j9t-fI-mOm">
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </tabBar>
+                    <connections>
+                        <segue destination="kon-Ej-mmj" kind="relationship" relationship="viewControllers" id="5Bb-RS-6zl"/>
+                        <segue destination="7yO-cv-gzP" kind="relationship" relationship="viewControllers" id="tmU-U8-LtP"/>
+                    </connections>
+                </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Xfr-J1-RiV" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2695.419847328244" y="3.5211267605633805"/>
+        </scene>
+        <!--Game-->
+        <scene sceneID="qdo-dE-NQq">
+            <objects>
+                <viewController id="7yO-cv-gzP" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="oD5-KU-V5e">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="bdf-Jw-uZ4"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Game" image="gamecontroller" catalog="system" id="1Q4-BP-CC6"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="mBj-Uh-WEV" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2729" y="743"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="GDj-JQ-Cdm"/>
+    </inferredMetricsTieBreakers>
     <resources>
+        <image name="gamecontroller" catalog="system" width="128" height="79"/>
+        <image name="grid" catalog="system" width="128" height="113"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

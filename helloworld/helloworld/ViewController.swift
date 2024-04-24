@@ -15,7 +15,7 @@ class ViewController: UIViewController {
 
 	@IBOutlet weak var restartButton: UIButton!
 
-	private var controller = TicTacToeController()
+	var controller = TicTacToeController()
 
 	override func viewDidLoad() {
 		super.viewDidLoad()

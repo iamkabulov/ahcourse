@@ -10,6 +10,7 @@ import Foundation
 class TicTacToeController {
 
 	var arrayXO: [XO] = []
+	var isComputer = false
 	var counter = 0
 	private let winCombination =
 	[
