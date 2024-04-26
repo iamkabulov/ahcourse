@@ -15,7 +15,7 @@ class ViewController: UIViewController {
 
 	@IBOutlet weak var restartButton: UIButton!
 
-	var controller = TicTacToeController()
+	lazy var controller = TicTacToeController(self)
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -27,6 +27,7 @@ class ViewController: UIViewController {
 		guard let indexOfButton = xoButtons.firstIndex(of: sender) else { return }
 		controller.choiceXO(for: indexOfButton)
 		self.updateView()
+		self.controller.computerTurn()
 	}
 
 	private func updateView() {
@@ -44,9 +45,7 @@ class ViewController: UIViewController {
 
 		if let win = controller.findWinner() {
 			self.status.text = "Winner \(win)"
-			xoButtons.forEach { button in
-				button.isEnabled = false
-			}
+			self.resetButtons()
 		}
 
 		if controller.counter == 0 {
@@ -57,9 +56,16 @@ class ViewController: UIViewController {
 	}
 
 	@IBAction func restartButton(_ sender: UIButton) {
-		controller = TicTacToeController()
+		self.controller.resetXO()
+		self.resetButtons()
 		self.status.text = "TIC TAC TOE"
 		self.updateView()
+	}
+
+	private func resetButtons() {
+		xoButtons.forEach { button in
+			button.isEnabled = false
+		}
 	}
 }
 

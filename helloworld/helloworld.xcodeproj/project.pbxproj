@@ -47,9 +47,6 @@
 			isa = PBXGroup;
 			children = (
 				B045727E2BD01B19008EBDF9 /* helloworld */,
-				B04572952BD6B051008EBDF9 /* Controller */,
-				B04572942BD6B048008EBDF9 /* View */,
-				B04572932BD6B03D008EBDF9 /* Model */,
 				B045727D2BD01B19008EBDF9 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -67,11 +64,13 @@
 			children = (
 				B045727F2BD01B19008EBDF9 /* AppDelegate.swift */,
 				B04572812BD01B19008EBDF9 /* SceneDelegate.swift */,
-				B04572832BD01B19008EBDF9 /* ViewController.swift */,
 				B04572852BD01B19008EBDF9 /* Main.storyboard */,
 				B04572882BD01B1A008EBDF9 /* Assets.xcassets */,
 				B045728A2BD01B1A008EBDF9 /* LaunchScreen.storyboard */,
 				B045728D2BD01B1A008EBDF9 /* Info.plist */,
+				B04572932BD6B03D008EBDF9 /* Model */,
+				B04572942BD6B048008EBDF9 /* View */,
+				B04572952BD6B051008EBDF9 /* Controller */,
 			);
 			path = helloworld;
 			sourceTree = "<group>";
@@ -95,6 +94,7 @@
 		B04572952BD6B051008EBDF9 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				B04572832BD01B19008EBDF9 /* ViewController.swift */,
 				B04572982BD6B0DB008EBDF9 /* TicTacToeController.swift */,
 			);
 			path = Controller;

@@ -210,7 +210,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="GAME WITH COMPUTER"/>
                                 <connections>
-                                    <segue destination="BYZ-38-t0r" kind="show" id="GDj-JQ-Cdm"/>
+                                    <segue destination="BYZ-38-t0r" kind="show" identifier="withComputer" id="GDj-JQ-Cdm"/>
                                 </connections>
                             </button>
                         </subviews>
