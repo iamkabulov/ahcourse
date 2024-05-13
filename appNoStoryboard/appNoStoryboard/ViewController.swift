@@ -9,7 +9,7 @@ import UIKit
 
 class ViewController: UIViewController {
 
-	var dataSource: [MovieTitle] = Array(repeating: MovieTitle(titleLabel: "Uncharted", image: UIImage(named: "movie")), count: 10)
+	private var themes = ["Popular", "Now playing", "Upcoming", "Top rated"]
 	var movieData: [Result] = []
 	
 	lazy var tableView: UITableView = {
@@ -23,9 +23,29 @@ class ViewController: UIViewController {
 		return view
 	}()
 
+	lazy var themeCollectionView: UICollectionView = {
+		let layout = UICollectionViewFlowLayout()
+		layout.scrollDirection = .vertical
+		let view = UICollectionView(
+			frame: .zero,
+			collectionViewLayout: layout
+		)
+		view.dataSource = self
+		view.delegate = self
+		view.largeContentTitle = "Theme"
+		view.register(CollectionViewHeader.self,
+					  forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+					  withReuseIdentifier: CollectionViewHeader.identifier)
+
+		view.register(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCell.identifier)
+//		view.backgroundColor = .cyan
+		view.translatesAutoresizingMaskIntoConstraints = false
+		return view
+	}()
+
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		self.view.backgroundColor = .blue
+		self.view.backgroundColor = .systemBackground
 		self.addView()
 		self.setupView()
 		self.apiRequest()
@@ -42,8 +62,13 @@ extension ViewController {
 
 	func setupView() {
 		self.view.addSubview(self.tableView)
+		self.view.addSubview(self.themeCollectionView)
 		NSLayoutConstraint.activate([
-			tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+			themeCollectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+			themeCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: CGFloat(5)),
+			themeCollectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -CGFloat(5)),
+			themeCollectionView.heightAnchor.constraint(equalToConstant: CGFloat(64)),
+			tableView.topAnchor.constraint(equalTo: themeCollectionView.bottomAnchor),
 			tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
 			tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
 			tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
@@ -113,5 +138,53 @@ extension ViewController {
 				}
 			}
 		}
+	}
+}
+
+
+extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+		themes.count
+	}
+
+	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+		guard let cell = self.themeCollectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.identifier, for: indexPath) as? CollectionViewCell else { return UICollectionViewCell() }
+		cell.nameOfButton.text = themes[indexPath.row]
+		return cell
+	}
+	
+	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+		return CGSize(width: 76, height: 24)
+	}
+
+	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+		if let cell = collectionView.cellForItem(at: indexPath) as? CollectionViewCell {
+			cell.contentView.backgroundColor = .red
+			cell.nameOfButton.textColor = .white
+		}
+
+	}
+
+
+
+	func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+		if let cell = collectionView.cellForItem(at: indexPath) as? CollectionViewCell {
+			cell.contentView.backgroundColor = .systemGray5
+			cell.nameOfButton.textColor = .black
+		}
+	}
+
+	func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+		guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: CollectionViewHeader.identifier, for: indexPath) as? CollectionViewHeader else { return UICollectionReusableView() }
+		header.configure()
+		return header
+	}
+
+	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+		CGSize(width: view.frame.size.width, height: CGFloat(30))
+	}
+
+	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+		UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 0)
 	}
 }
