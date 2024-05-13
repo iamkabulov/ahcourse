@@ -14,7 +14,7 @@ final class MovieViewCell: UITableViewCell {
 	static var identifier: String {
 		return String(describing: self)
 	}
-	static let rowHeight: CGFloat = 480
+	static let rowHeight: CGFloat = 460
 
 	private enum Spacing {
 		enum Size {
@@ -42,13 +42,17 @@ final class MovieViewCell: UITableViewCell {
 		return image
 	}()
 
-	private lazy var spinner = UIActivityIndicatorView(style: .medium)
+	private lazy var spinner: UIActivityIndicatorView = {
+		let spinner = UIActivityIndicatorView(style: .medium)
+		spinner.translatesAutoresizingMaskIntoConstraints = false
+		return spinner
+	}()
 
 	private lazy var stackView: UIStackView = {
 		let stack = UIStackView(arrangedSubviews: [movieImage, titleLabel])
 		stack.translatesAutoresizingMaskIntoConstraints = false
 		stack.axis = .vertical
-		stack.distribution = .equalSpacing
+		stack.distribution = .fill
 		stack.alignment = .center
 		return stack
 	}()
@@ -68,15 +72,17 @@ final class MovieViewCell: UITableViewCell {
 
 	func setImage(img: UIImage?) {
 		guard let img = img else {
-			stackView.addArrangedSubview(spinner)
+			contentView.addSubview(spinner)
 			spinner.startAnimating()
 			spinner.centerXAnchor.constraint(equalTo: stackView.centerXAnchor).isActive = true
+			spinner.heightAnchor.constraint(equalToConstant: Spacing.Size.height).isActive = true
 			spinner.centerYAnchor.constraint(equalTo: stackView.centerYAnchor).isActive = true
 			return
 		}
 		movieImage.image = img
 		spinner.stopAnimating()
 		spinner.centerXAnchor.constraint(equalTo: stackView.centerXAnchor).isActive = false
+		spinner.heightAnchor.constraint(equalToConstant: Spacing.Size.height).isActive = false
 		spinner.centerYAnchor.constraint(equalTo: stackView.centerYAnchor).isActive = false
 	}
 }
@@ -91,14 +97,7 @@ private extension MovieViewCell {
 			stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
 			stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
 			movieImage.heightAnchor.constraint(lessThanOrEqualToConstant: Spacing.Size.height),
-			movieImage.widthAnchor.constraint(equalToConstant: Spacing.Size.width),
-			movieImage.topAnchor.constraint(equalTo: stackView.topAnchor, constant: Spacing.small),
-			movieImage.leadingAnchor.constraint(equalTo: stackView.leadingAnchor, constant: Spacing.large),
-			movieImage.trailingAnchor.constraint(equalTo: stackView.trailingAnchor, constant: -Spacing.large),
-			titleLabel.topAnchor.constraint(equalTo: movieImage.bottomAnchor, constant: Spacing.small),
-			titleLabel.leadingAnchor.constraint(equalTo: stackView.leadingAnchor, constant: Spacing.large),
-			titleLabel.trailingAnchor.constraint(equalTo: stackView.trailingAnchor, constant: -Spacing.large),
-			titleLabel.bottomAnchor.constraint(equalTo: stackView.bottomAnchor, constant: -Spacing.small)
+			movieImage.widthAnchor.constraint(equalToConstant: Spacing.Size.width)
 		])
 	}
 }
