@@ -105,12 +105,13 @@ extension ViewController {
 	func getImage(path: String, cell: MovieViewCell) {
 		print(path)
 		if let urlString = URL(string: "https://image.tmdb.org/t/p/w500\(path)") {
-			URLSession.shared.dataTask(with: urlString) { data, response, error in
-				DispatchQueue.main.async(flags: .barrier) {
-					guard let data = data, error == nil else { return }
-					cell.setImage(img: UIImage(data: data))
+			DispatchQueue.global(qos: .background).async {
+				if let data = try? Data(contentsOf: urlString) {
+					DispatchQueue.main.async {
+						cell.setImage(img: UIImage(data: data))
+					}
 				}
-			}.resume()
+			}
 		}
 	}
 }
