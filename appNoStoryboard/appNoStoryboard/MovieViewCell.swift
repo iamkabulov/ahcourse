@@ -14,10 +14,14 @@ final class MovieViewCell: UITableViewCell {
 	static var identifier: String {
 		return String(describing: self)
 	}
-	static let rowHeight: CGFloat = 470
+	static let rowHeight: CGFloat = 480
 
 	private enum Spacing {
-		static let small: CGFloat = 4
+		enum Size {
+			static let height: CGFloat = 424
+			static let width: CGFloat = 309
+		}
+		static let small: CGFloat = 1
 		static let medium: CGFloat = 8
 		static let large: CGFloat = 16
 	}
@@ -25,13 +29,16 @@ final class MovieViewCell: UITableViewCell {
 	private lazy var titleLabel: UILabel = {
 		let label = UILabel()
 		label.translatesAutoresizingMaskIntoConstraints = false
-		label.font = UIFont.preferredFont(forTextStyle: .title1)
+		label.font = UIFont.preferredFont(forTextStyle: .headline)
+		label.textAlignment = .center
 		return label
 	}()
 
 	private lazy var movieImage: UIImageView = {
 		let image = UIImageView()
 		image.translatesAutoresizingMaskIntoConstraints = false
+		image.layer.masksToBounds = true
+		image.layer.cornerRadius = 30
 		return image
 	}()
 
@@ -39,7 +46,7 @@ final class MovieViewCell: UITableViewCell {
 		let stack = UIStackView(arrangedSubviews: [movieImage, titleLabel])
 		stack.translatesAutoresizingMaskIntoConstraints = false
 		stack.axis = .vertical
-		stack.distribution = .fillProportionally
+		stack.distribution = .equalSpacing
 		stack.alignment = .center
 		return stack
 	}()
@@ -53,9 +60,13 @@ final class MovieViewCell: UITableViewCell {
 		fatalError("init(coder:) has not been implemented")
 	}
 	
-	func setData(movie: MovieTitle) {
-		titleLabel.text = movie.titleLabel
-		movieImage.image = movie.image
+	func setData(movie: Result) {
+		titleLabel.text = movie.title
+	}
+
+	func setImage(img: UIImage?) {
+		guard let img = img else { return movieImage.image = UIImage(systemName: "arrow.down.circle.dotted") }
+		movieImage.image = img
 	}
 }
 
@@ -68,6 +79,15 @@ private extension MovieViewCell {
 			stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
 			stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
 			stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+			movieImage.heightAnchor.constraint(lessThanOrEqualToConstant: Spacing.Size.height),
+			movieImage.widthAnchor.constraint(equalToConstant: Spacing.Size.width),
+			movieImage.topAnchor.constraint(equalTo: stackView.topAnchor, constant: Spacing.small),
+			movieImage.leadingAnchor.constraint(equalTo: stackView.leadingAnchor, constant: Spacing.large),
+			movieImage.trailingAnchor.constraint(equalTo: stackView.trailingAnchor, constant: -Spacing.large),
+			titleLabel.topAnchor.constraint(equalTo: movieImage.bottomAnchor, constant: Spacing.small),
+			titleLabel.leadingAnchor.constraint(equalTo: stackView.leadingAnchor, constant: Spacing.large),
+			titleLabel.trailingAnchor.constraint(equalTo: stackView.trailingAnchor, constant: -Spacing.large),
+			titleLabel.bottomAnchor.constraint(equalTo: stackView.bottomAnchor, constant: -Spacing.small)
 		])
 	}
 }
