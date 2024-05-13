@@ -42,6 +42,8 @@ final class MovieViewCell: UITableViewCell {
 		return image
 	}()
 
+	private lazy var spinner = UIActivityIndicatorView(style: .medium)
+
 	private lazy var stackView: UIStackView = {
 		let stack = UIStackView(arrangedSubviews: [movieImage, titleLabel])
 		stack.translatesAutoresizingMaskIntoConstraints = false
@@ -65,8 +67,17 @@ final class MovieViewCell: UITableViewCell {
 	}
 
 	func setImage(img: UIImage?) {
-		guard let img = img else { return movieImage.image = UIImage(systemName: "arrow.down.circle.dotted") }
+		guard let img = img else {
+			stackView.addArrangedSubview(spinner)
+			spinner.startAnimating()
+			spinner.centerXAnchor.constraint(equalTo: stackView.centerXAnchor).isActive = true
+			spinner.centerYAnchor.constraint(equalTo: stackView.centerYAnchor).isActive = true
+			return
+		}
 		movieImage.image = img
+		spinner.stopAnimating()
+		spinner.centerXAnchor.constraint(equalTo: stackView.centerXAnchor).isActive = false
+		spinner.centerYAnchor.constraint(equalTo: stackView.centerYAnchor).isActive = false
 	}
 }
 
