@@ -10,11 +10,12 @@ import UIKit
 
 final class MovieViewCell: UITableViewCell {
 
-//	static let identifier = "Id"
+	//	static let identifier = "Id"
 	static var identifier: String {
 		return String(describing: self)
 	}
 	static let rowHeight: CGFloat = 460
+	private var path: String?
 
 	private enum Spacing {
 		enum Size {
@@ -61,29 +62,56 @@ final class MovieViewCell: UITableViewCell {
 		super.init(style: style, reuseIdentifier: reuseIdentifier)
 		setupLayout()
 	}
-	
+
+	override func prepareForReuse() {
+		super.prepareForReuse()
+		contentView.layoutIfNeeded()
+		movieImage.image = UIImage(named: "whiteBackground")
+	}
+
 	required init?(coder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
 	}
-	
-	func setData(movie: Result) {
+
+	func setData(movie: List) {
 		titleLabel.text = movie.title
+		setImage(img: nil)
+		loadImage(from: movie.posterPath)
+	}
+
+	func loadImage(from url: String) {
+		path = url
+		if let urlString = URL(string: "https://image.tmdb.org/t/p/w500\(url)") {
+			DispatchQueue.global().async {
+				guard let data = try? Data(contentsOf: urlString), let image = UIImage(data: data) else {
+					return
+				}
+				DispatchQueue.main.async {
+					if url == self.path {
+						self.setImage(img: image)
+					}
+				}
+			}
+		}
 	}
 
 	func setImage(img: UIImage?) {
 		guard let img = img else {
 			contentView.addSubview(spinner)
 			spinner.startAnimating()
+			spinner.isHidden = false
 			spinner.centerXAnchor.constraint(equalTo: stackView.centerXAnchor).isActive = true
 			spinner.heightAnchor.constraint(equalToConstant: Spacing.Size.height).isActive = true
 			spinner.centerYAnchor.constraint(equalTo: stackView.centerYAnchor).isActive = true
+//			movieImage.heightAnchor.constraint(lessThanOrEqualToConstant: Spacing.Size.height).isActive = false
+//			movieImage.widthAnchor.constraint(equalToConstant: Spacing.Size.width).isActive = false
+			contentView.layoutIfNeeded()
 			return
 		}
-		movieImage.image = img
-		spinner.stopAnimating()
-		spinner.centerXAnchor.constraint(equalTo: stackView.centerXAnchor).isActive = false
-		spinner.heightAnchor.constraint(equalToConstant: Spacing.Size.height).isActive = false
-		spinner.centerYAnchor.constraint(equalTo: stackView.centerYAnchor).isActive = false
+			self.spinner.stopAnimating()
+			self.spinner.isHidden = true
+			self.movieImage.image = img
+			self.contentView.layoutIfNeeded()
 	}
 }
 
