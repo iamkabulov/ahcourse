@@ -21,12 +21,37 @@ struct MovieEntity: Codable {
 	}
 }
 
+struct PopularMovieEntity: Codable {
+	let page: Int
+	let results: [List]
+	let totalPages, totalResults: Int
+
+	enum CodingKeys: String, CodingKey {
+		case page, results
+		case totalPages = "total_pages"
+		case totalResults = "total_results"
+	}
+}
+
+struct TopRated: Codable {
+	let page: Int
+	let results: [List]
+	let totalPages, totalResults: Int
+
+	enum CodingKeys: String, CodingKey {
+		case page, results
+		case totalPages = "total_pages"
+		case totalResults = "total_results"
+	}
+}
+
+
 // MARK: - Dates
 struct Dates: Codable {
 	let maximum, minimum: String
 }
 
-// MARK: - Result
+// MARK: - List
 struct List: Codable {
 	let adult: Bool
 	let backdropPath: String?
@@ -60,16 +85,4 @@ enum OriginalLanguage: String, Codable {
 	case es = "es"
 	case fr = "fr"
 	case ja = "ja"
-}
-
-struct TopRated: Codable {
-	let page: Int
-	let results: [List]
-	let totalPages, totalResults: Int
-
-	enum CodingKeys: String, CodingKey {
-		case page, results
-		case totalPages = "total_pages"
-		case totalResults = "total_results"
-	}
 }

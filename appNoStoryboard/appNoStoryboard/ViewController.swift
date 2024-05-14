@@ -11,6 +11,14 @@ class ViewController: UIViewController {
 
 	private var themes = ["Popular", "Now Playing", "Upcoming", "Top Rated"]
 	var movieData: [List] = []
+	private lazy var themeLabel: UILabel = {
+		let label = UILabel()
+		label.translatesAutoresizingMaskIntoConstraints = false
+		label.text = "Theme"
+		label.font = UIFont.preferredFont(forTextStyle: .headline)
+		return label
+	}()
+
 	private let session = URLSession(configuration: .default)
 	lazy private var urlComponent: URLComponents = {
 		var component = URLComponents()
@@ -21,6 +29,7 @@ class ViewController: UIViewController {
 		]
 		return component
 	}()
+
 	lazy var tableView: UITableView = {
 		let view = UITableView()
 		view.translatesAutoresizingMaskIntoConstraints = false
@@ -34,17 +43,13 @@ class ViewController: UIViewController {
 
 	lazy var themeCollectionView: UICollectionView = {
 		let layout = UICollectionViewFlowLayout()
-		layout.scrollDirection = .vertical
+		layout.scrollDirection = .horizontal
 		let view = UICollectionView(
 			frame: .zero,
 			collectionViewLayout: layout
 		)
 		view.dataSource = self
 		view.delegate = self
-		view.largeContentTitle = "Theme"
-		view.register(CollectionViewHeader.self,
-					  forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-					  withReuseIdentifier: CollectionViewHeader.identifier)
 
 		view.register(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCell.identifier)
 //		view.backgroundColor = .cyan
@@ -84,13 +89,16 @@ extension ViewController {
 	}
 
 	func setupView() {
+		self.view.addSubview(self.themeLabel)
 		self.view.addSubview(self.tableView)
 		self.view.addSubview(self.themeCollectionView)
 		NSLayoutConstraint.activate([
-			themeCollectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-			themeCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: CGFloat(5)),
-			themeCollectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -CGFloat(5)),
-			themeCollectionView.heightAnchor.constraint(equalToConstant: CGFloat(64)),
+			themeLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+			themeLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: CGFloat(15)),
+			themeCollectionView.topAnchor.constraint(equalTo: themeLabel.bottomAnchor, constant: CGFloat(5)),
+			themeCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: CGFloat(10)),
+			themeCollectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -CGFloat(10)),
+			themeCollectionView.heightAnchor.constraint(equalToConstant: CGFloat(30)),
 			tableView.topAnchor.constraint(equalTo: themeCollectionView.bottomAnchor),
 			tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
 			tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
@@ -105,7 +113,6 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
 	}
 	
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
 		guard let cell = self.tableView.dequeueReusableCell(withIdentifier: MovieViewCell.identifier, for: indexPath) as? MovieViewCell else { return UITableViewCell() }
 		cell.setData(movie: movieData[indexPath.row])
 		return cell
@@ -232,9 +239,9 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, 
 		cell.nameOfButton.text = themes[indexPath.row]
 		return cell
 	}
-	
+
 	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-		return CGSize(width: 76, height: 24)
+		return CGSize(width: 80, height: 24)
 	}
 
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -252,29 +259,5 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, 
 			cell.isSelected = false
 			cell.nameOfButton.textColor = .black
 		}
-	}
-
-	func collectionView(_ collectionView: UICollectionView, shouldDeselectItemAt indexPath: IndexPath) -> Bool {
-		if let items = collectionView.indexPathsForSelectedItems {
-			if items.contains(indexPath) {
-				collectionView.deselectItem(at: indexPath, animated: false)
-				return false
-			}
-		}
-		return true
-	}
-
-	func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-		guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: CollectionViewHeader.identifier, for: indexPath) as? CollectionViewHeader else { return UICollectionReusableView() }
-		header.configure()
-		return header
-	}
-
-	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-		CGSize(width: view.frame.size.width, height: CGFloat(30))
-	}
-
-	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-		UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 0)
 	}
 }

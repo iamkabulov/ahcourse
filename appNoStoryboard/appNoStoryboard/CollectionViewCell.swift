@@ -24,7 +24,7 @@ class CollectionViewCell: UICollectionViewCell {
 		super.init(frame: frame)
 		setupView()
 		contentView.backgroundColor = .systemGray5
-		contentView.layer.cornerRadius = 7.0
+		contentView.layer.cornerRadius = 10.0
 		contentView.layer.masksToBounds = true
 	}
 	
