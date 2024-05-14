@@ -61,3 +61,15 @@ enum OriginalLanguage: String, Codable {
 	case fr = "fr"
 	case ja = "ja"
 }
+
+struct TopRated: Codable {
+	let page: Int
+	let results: [List]
+	let totalPages, totalResults: Int
+
+	enum CodingKeys: String, CodingKey {
+		case page, results
+		case totalPages = "total_pages"
+		case totalResults = "total_results"
+	}
+}

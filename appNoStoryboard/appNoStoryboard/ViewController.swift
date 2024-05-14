@@ -11,8 +11,16 @@ class ViewController: UIViewController {
 
 	private var themes = ["Popular", "Now Playing", "Upcoming", "Top Rated"]
 	var movieData: [List] = []
-	lazy var imgData = [IndexPath: Data?]()
-
+	private let session = URLSession(configuration: .default)
+	lazy private var urlComponent: URLComponents = {
+		var component = URLComponents()
+		component.scheme = "https"
+		component.host = "api.themoviedb.org"
+		component.queryItems = [
+			URLQueryItem(name: "api_key", value: "9863b0919782bd200569d84cf236247b")
+		]
+		return component
+	}()
 	lazy var tableView: UITableView = {
 		let view = UITableView()
 		view.translatesAutoresizingMaskIntoConstraints = false
@@ -114,25 +122,19 @@ extension ViewController {
 			getUpcomingMovies()
 		case "Popular":
 			getPopularMovies()
+		case "Now Playing":
+			getNowPlaying()
+		case "Top Rated":
+			getTopRated()
 		default:
 			print("Something went wrong.")
 		}
 	}
 
 	func getUpcomingMovies() {
-		let session = URLSession(configuration: .default)
-		lazy var urlComponent: URLComponents = {
-			var component = URLComponents()
-			component.scheme = "https"
-			component.host = "api.themoviedb.org"
-			component.path = "/3/movie/upcoming"
-			component.queryItems = [
-				URLQueryItem(name: "api_key", value: "9863b0919782bd200569d84cf236247b")
-			]
-			return component
-		}()
+		self.urlComponent.path = "/3/movie/upcoming"
 
-		guard let requestUrl = urlComponent.url else { return }
+		guard let requestUrl = self.urlComponent.url else { return }
 
 		session.dataTask(with: requestUrl) { data, response, error in
 			DispatchQueue.main.async(flags: .barrier) { [self] in
@@ -152,21 +154,10 @@ extension ViewController {
 	}
 
 	func getPopularMovies() {
-		let session = URLSession(configuration: .default)
-		lazy var urlComponent: URLComponents = {
-			var component = URLComponents()
-			component.scheme = "https"
-			component.host = "api.themoviedb.org"
-			component.path = "/3/movie/popular"
-			component.queryItems = [
-				URLQueryItem(name: "api_key", value: "9863b0919782bd200569d84cf236247b")
-			]
-			return component
-		}()
-
+		self.urlComponent.path = "/3/movie/popular"
 		guard let requestUrl = urlComponent.url else { return }
 
-		session.dataTask(with: requestUrl) { data, response, error in
+		self.session.dataTask(with: requestUrl) { data, response, error in
 			DispatchQueue.main.async(flags: .barrier) { [self] in
 				guard let data = data, error == nil else {
 					print(data ?? "")
@@ -184,21 +175,48 @@ extension ViewController {
 		}.resume()
 	}
 
-	func getImage2(path: String, completion: @escaping (Data?) -> Void) {
-		if let url = URL(string: "https://image.tmdb.org/t/p/w500\(path)") {
-			URLSession.shared.dataTask(with: url) { data, response, error in
-				DispatchQueue.global(qos: .background).async {
-					guard let _ = data, error == nil else { return }
-					do {
-						if let response = try? Data(contentsOf: url) {
-							DispatchQueue.main.async {
-								completion(response)
-							}
-						}
-					}
+	func getNowPlaying() {
+		self.urlComponent.path = "/3/movie/now_playing"
+
+		guard let requestUrl = self.urlComponent.url else { return }
+
+		session.dataTask(with: requestUrl) { data, response, error in
+			DispatchQueue.main.async(flags: .barrier) { [self] in
+				guard let data = data, error == nil else {
+					return
 				}
-			}.resume()
-		}
+				do {
+					let response = try JSONDecoder().decode(MovieEntity.self, from: data)
+					self.movieData = response.results
+					self.tableView.reloadData()
+					return
+				} catch {
+					return print(error)
+				}
+			}
+		}.resume()
+	}
+
+	func getTopRated() {
+		self.urlComponent.path = "/3/movie/top_rated"
+
+		guard let requestUrl = self.urlComponent.url else { return }
+
+		session.dataTask(with: requestUrl) { data, response, error in
+			DispatchQueue.main.async(flags: .barrier) { [self] in
+				guard let data = data, error == nil else {
+					return
+				}
+				do {
+					let response = try JSONDecoder().decode(TopRated.self, from: data)
+					self.movieData = response.results
+					self.tableView.reloadData()
+					return
+				} catch {
+					return print(error)
+				}
+			}
+		}.resume()
 	}
 }
 
