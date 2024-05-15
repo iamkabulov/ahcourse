@@ -31,11 +31,11 @@ class MovieDetailsViewController: UIViewController {
 	}()
 	
 	private lazy var stackView: UIStackView = {
-		let stack = UIStackView(arrangedSubviews: [movieImage, titleLabel])
+		let stack = UIStackView(arrangedSubviews: [movieImage, titleLabel, releaseDate])
 		stack.translatesAutoresizingMaskIntoConstraints = false
 		stack.backgroundColor = .red
 		stack.axis = .vertical
-		stack.distribution = .fill
+		stack.distribution = .fillProportionally
 		stack.alignment = .center
 		return stack
 	}()
@@ -53,6 +53,15 @@ class MovieDetailsViewController: UIViewController {
 		label.translatesAutoresizingMaskIntoConstraints = false
 		label.textAlignment = .center
 		label.font = UIFont.systemFont(ofSize: 48, weight: .bold)
+		label.text = "\(id)"
+		return label
+	}()
+
+	private lazy var releaseDate: UILabel = {
+		let label = UILabel()
+		label.translatesAutoresizingMaskIntoConstraints = false
+		label.textAlignment = .left
+		label.font = UIFont.systemFont(ofSize: 24, weight: .medium)
 		label.text = "\(id)"
 		return label
 	}()
@@ -78,20 +87,32 @@ class MovieDetailsViewController: UIViewController {
 
 extension MovieDetailsViewController {
 	func setupView() {
-		scrollView.addSubview(stackView)
 		view.addSubview(scrollView)
+		scrollView.addSubview(stackView)
 		NSLayoutConstraint.activate([
-			scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-			scrollView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-			scrollView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-			scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-//			movieImage.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-//			movieImage.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 33),
-//			movieImage.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -33),
-//			movieImage.heightAnchor.constraint(equalToConstant: 424),
-//			titleLabel.topAnchor.constraint(equalTo: movieImage.bottomAnchor, constant: 20),
-//			titleLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10),
-//			titleLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10)
+			scrollView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
+			scrollView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor),
+			scrollView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor),
+			scrollView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor),
+//			stackView.topAnchor.constraint(equalTo: self.scrollView.topAnchor),
+//			stackView.leadingAnchor.constraint(equalTo: self.scrollView.leadingAnchor),
+//			stackView.trailingAnchor.constraint(equalTo: self.scrollView.trailingAnchor),
+//			stackView.bottomAnchor.constraint(equalTo: self.scrollView.bottomAnchor),
+			stackView.widthAnchor.constraint(equalTo: self.scrollView.widthAnchor, multiplier: 1),
+			stackView.heightAnchor.constraint(equalTo: self.scrollView.heightAnchor, multiplier: 1),
+			
+			movieImage.topAnchor.constraint(equalTo: self.stackView.topAnchor),
+//			movieImage.leadingAnchor.constraint(equalTo: self.stackView.leadingAnchor, constant: 20),
+//			movieImage.trailingAnchor.constraint(equalTo: self.stackView.trailingAnchor, constant: -20),
+			movieImage.heightAnchor.constraint(equalToConstant: 424),
+			titleLabel.topAnchor.constraint(equalTo: movieImage.bottomAnchor),
+			titleLabel.leadingAnchor.constraint(equalTo: self.stackView.leadingAnchor, constant: 10),
+			titleLabel.trailingAnchor.constraint(equalTo: self.stackView.trailingAnchor, constant: -10),
+
+			releaseDate.topAnchor.constraint(equalTo: self.titleLabel.bottomAnchor),
+			releaseDate.leadingAnchor.constraint(equalTo: self.stackView.leadingAnchor, constant: 15)
+
+
 		])
 	}
 
