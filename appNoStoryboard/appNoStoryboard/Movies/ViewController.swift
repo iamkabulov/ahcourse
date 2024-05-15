@@ -71,6 +71,7 @@ class ViewController: UIViewController {
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
+		self.title = "Movie DB"
 		self.view.backgroundColor = .systemBackground
 		self.addView()
 		self.setupView()
@@ -117,6 +118,11 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
 		cell.setData(movie: movieData[indexPath.row])
 		return cell
 
+	}
+
+	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+		let detailView = MovieDetailsViewController(id: movieData[indexPath.row].id)
+		self.navigationController?.pushViewController(detailView, animated: true)
 	}
 }
 
