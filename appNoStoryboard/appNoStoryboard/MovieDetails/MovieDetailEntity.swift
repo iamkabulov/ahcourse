@@ -1,13 +1,11 @@
+// This file was generated from JSON Schema using quicktype, do not modify it directly.
+// To parse the JSON, add this file to your project and do:
 //
-//  MovieDetailEntity.swift
-//  appNoStoryboard
-//
-//  Created by Nursultan Kabulov on 15.05.2024.
-//
+//   let welcome = try? JSONDecoder().decode(Welcome.self, from: jsonData)
 
 import Foundation
 
-// MARK: - MovieDetails
+// MARK: - Welcome
 struct MovieDetailEntity: Codable {
 	let adult: Bool
 	let backdropPath: String

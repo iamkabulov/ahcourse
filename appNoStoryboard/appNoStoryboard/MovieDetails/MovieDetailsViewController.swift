@@ -31,21 +31,111 @@ class MovieDetailsViewController: UIViewController {
 	}()
 	
 	private lazy var stackView: UIStackView = {
-		let stack = UIStackView(arrangedSubviews: [movieImage, titleLabel, releaseDate])
+		let stack = UIStackView(arrangedSubviews: [moviePoster, titleLabel, horizontalStackView, descriptionView])
 		stack.translatesAutoresizingMaskIntoConstraints = false
-		stack.backgroundColor = .red
+//		stack.backgroundColor = .red
 		stack.axis = .vertical
-		stack.distribution = .fillProportionally
-		stack.alignment = .center
+//		stack.contentMode = .center
+//		stack.distribution = .equalSpacing
+//		stack.alignment = .center
+
+		stack.spacing = 20
 		return stack
 	}()
 
-	private lazy var movieImage: UIImageView = {
+	private lazy var horizontalStackView: UIStackView = {
+		let stack = UIStackView(arrangedSubviews: [vStackDateAndGenre, vStackRateAndViews])
+		stack.translatesAutoresizingMaskIntoConstraints = false
+//		stack.backgroundColor = .gray
+		stack.axis = .horizontal
+		stack.distribution = .equalSpacing
+		stack.alignment = .center
+		stack.spacing = .zero
+		return stack
+	}()
+
+	private lazy var vStackDateAndGenre: UIStackView = {
+		let stack = UIStackView(arrangedSubviews: [releaseDate, genreCollectionView])
+		stack.translatesAutoresizingMaskIntoConstraints = false
+//		stack.backgroundColor = .cyan
+		stack.axis = .vertical
+		stack.spacing = 14
+//		stack.alignment = .leading
+//		stack.distribution = .equalSpacing
+		return stack
+	}()
+
+	private lazy var vStackRateAndViews: UIStackView = {
+		let stack = UIStackView(arrangedSubviews: [rateImage, rateLabel, viewsLabel])
+		stack.translatesAutoresizingMaskIntoConstraints = false
+//		stack.backgroundColor = .cyan
+		stack.axis = .vertical
+		stack.alignment = .center
+		stack.spacing = 2
+//		stack.distribution = .fillProportionally
+		return stack
+	}()
+
+	lazy var genreCollectionView: UICollectionView = {
+		let layout = UICollectionViewFlowLayout()
+		layout.scrollDirection = .horizontal
+		let view = UICollectionView(
+			frame: .zero,
+			collectionViewLayout: layout
+		)
+
+		view.dataSource = self
+		view.delegate = self
+		view.register(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCell.identifier)
+//		view.contentMode = .scaleAspectFit
+		view.translatesAutoresizingMaskIntoConstraints = false
+//		view.backgroundColor = .green
+		return view
+	}()
+
+	private lazy var moviePoster: UIImageView = {
 		let image = UIImageView()
 		image.translatesAutoresizingMaskIntoConstraints = false
 		image.image = UIImage(named: "movie")
-		image.layer.masksToBounds = true
+		image.contentMode = .scaleAspectFit
 		return image
+	}()
+
+	private lazy var rateImage: UIImageView = {
+		let image = UIImageView()
+		image.translatesAutoresizingMaskIntoConstraints = false
+		image.image = UIImage(named: "sampleRate")
+		image.contentMode = .scaleAspectFit
+		return image
+	}()
+
+	private lazy var rateLabel: UILabel = {
+		let label = UILabel()
+		label.translatesAutoresizingMaskIntoConstraints = false
+		label.textAlignment = .center
+		label.font = UIFont.systemFont(ofSize: 16, weight: .regular)
+
+		return label
+	}()
+
+	private lazy var descriptionView: UITextView = {
+		let label = UITextView()
+		label.translatesAutoresizingMaskIntoConstraints = false
+		label.textAlignment = .center
+		label.font = UIFont.systemFont(ofSize: 10, weight: .regular)
+		label.text = "Lorem"
+		label.heightAnchor.constraint(equalToConstant: 400).isActive = true
+		return label
+	}()
+
+	private lazy var viewsLabel: UILabel = {
+		let label = UILabel()
+		label.translatesAutoresizingMaskIntoConstraints = false
+		label.textAlignment = .center
+		label.font = UIFont.systemFont(ofSize: 14, weight: .light)
+		label.textColor = .gray
+		label.text = movieData?.imdbID
+		return label
 	}()
 
 	private lazy var titleLabel: UILabel = {
@@ -53,16 +143,17 @@ class MovieDetailsViewController: UIViewController {
 		label.translatesAutoresizingMaskIntoConstraints = false
 		label.textAlignment = .center
 		label.font = UIFont.systemFont(ofSize: 48, weight: .bold)
-		label.text = "\(id)"
+		label.numberOfLines = 0
+		label.text = movieData?.originalTitle
 		return label
 	}()
 
 	private lazy var releaseDate: UILabel = {
 		let label = UILabel()
 		label.translatesAutoresizingMaskIntoConstraints = false
-		label.textAlignment = .left
-		label.font = UIFont.systemFont(ofSize: 24, weight: .medium)
-		label.text = "\(id)"
+//		label.textAlignment = .
+		label.font = UIFont.systemFont(ofSize: 20, weight: .light)
+		label.text = "movieData?.releaseDate"
 		return label
 	}()
 
@@ -82,6 +173,7 @@ class MovieDetailsViewController: UIViewController {
 //		self.view = self.scrollView
 		setupView()
 		getDetailInfo(id: id)
+		genreCollectionView.reloadData()
 	}
 }
 
@@ -90,30 +182,35 @@ extension MovieDetailsViewController {
 		view.addSubview(scrollView)
 		scrollView.addSubview(stackView)
 		NSLayoutConstraint.activate([
+			//SCROLL
 			scrollView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
 			scrollView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor),
 			scrollView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor),
 			scrollView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor),
-//			stackView.topAnchor.constraint(equalTo: self.scrollView.topAnchor),
-//			stackView.leadingAnchor.constraint(equalTo: self.scrollView.leadingAnchor),
-//			stackView.trailingAnchor.constraint(equalTo: self.scrollView.trailingAnchor),
-//			stackView.bottomAnchor.constraint(equalTo: self.scrollView.bottomAnchor),
-			stackView.widthAnchor.constraint(equalTo: self.scrollView.widthAnchor, multiplier: 1),
-			stackView.heightAnchor.constraint(equalTo: self.scrollView.heightAnchor, multiplier: 1),
-			
-			movieImage.topAnchor.constraint(equalTo: self.stackView.topAnchor),
-//			movieImage.leadingAnchor.constraint(equalTo: self.stackView.leadingAnchor, constant: 20),
-//			movieImage.trailingAnchor.constraint(equalTo: self.stackView.trailingAnchor, constant: -20),
-			movieImage.heightAnchor.constraint(equalToConstant: 424),
-			titleLabel.topAnchor.constraint(equalTo: movieImage.bottomAnchor),
-			titleLabel.leadingAnchor.constraint(equalTo: self.stackView.leadingAnchor, constant: 10),
-			titleLabel.trailingAnchor.constraint(equalTo: self.stackView.trailingAnchor, constant: -10),
+			//STACK
+			stackView.topAnchor.constraint(equalTo: self.scrollView.contentLayoutGuide.topAnchor, constant: 0),
+			stackView.leadingAnchor.constraint(equalTo: self.scrollView.contentLayoutGuide.leadingAnchor, constant: 10),
+			stackView.trailingAnchor.constraint(equalTo: self.scrollView.contentLayoutGuide.trailingAnchor, constant: -10),
+			stackView.bottomAnchor.constraint(equalTo: self.scrollView.contentLayoutGuide.bottomAnchor, constant: 0),
+			stackView.widthAnchor.constraint(equalTo: self.scrollView.frameLayoutGuide.widthAnchor, constant: -20),
+			//POSTER
+//			moviePoster.topAnchor.constraint(equalTo: self.stackView.topAnchor),
+//			moviePoster.leadingAnchor.constraint(equalTo: self.stackView.leadingAnchor),
+//			moviePoster.trailingAnchor.constraint(equalTo: self.stackView.trailingAnchor),
+			//OTHERS
+//			horizontalStackView.topAnchor.constraint(equalTo: self.titleLabel.bottomAnchor),
+//			horizontalStackView.heightAnchor.constraint(equalToConstant: 100),
+//			releaseDate.leadingAnchor.constraint(equalTo: vStackDateAndGenre.leadingAnchor, constant: 15),
+//			genreCollectionView.leadingAnchor.constraint(equalTo: releaseDate.leadingAnchor),
+//			rateImage.trailingAnchor.constraint(equalTo: vStackRateAndViews.trailingAnchor, constant: -15),
 
-			releaseDate.topAnchor.constraint(equalTo: self.titleLabel.bottomAnchor),
-			releaseDate.leadingAnchor.constraint(equalTo: self.stackView.leadingAnchor, constant: 15)
-
-
+			genreCollectionView.widthAnchor.constraint(equalToConstant: 170),
+			genreCollectionView.heightAnchor.constraint(equalToConstant: 24),
 		])
+
+		//CHCR
+//		moviePoster.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+//		rateImage.setContentHuggingPriority(.defaultHigh, for: .vertical)
 	}
 
 
@@ -129,12 +226,51 @@ extension MovieDetailsViewController {
 				}
 				do {
 					let response = try JSONDecoder().decode(MovieDetailEntity.self, from: data)
-					movieData = response
+
+					self.movieData = response
+					guard let detail = self.movieData else { return }
+					DispatchQueue.main.async {
+						self.setData(detail)
+					}
+					genreCollectionView.reloadData()
 					return
 				} catch {
 					return print(error)
 				}
 			}
 		}.resume()
+	}
+
+	func setData(_ movieDetail: MovieDetailEntity) {
+		rateLabel.text = movieDetail.originalLanguage
+		releaseDate.text = movieDetail.releaseDate
+		titleLabel.text = movieDetail.originalTitle
+		rateLabel.text = movieDetail.imdbID
+		viewsLabel.text = movieDetail.status
+	}
+}
+
+
+extension MovieDetailsViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+		guard let data = movieData else { return 2 }
+		return data.genres.count
+	}
+	
+	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+		guard let cell = self.genreCollectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.identifier, for: indexPath) as? CollectionViewCell else { return UICollectionViewCell() }
+		guard let data = movieData else {
+
+			cell.nameOfButton.text = "Genre"
+			return cell
+		}
+		cell.nameOfButton.textColor = .white
+		cell.contentView.backgroundColor = .blue
+		cell.nameOfButton.text = data.genres[indexPath.row].name
+		return cell
+	}
+
+	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+		return CGSize(width: 80, height: 24)
 	}
 }
