@@ -11,6 +11,8 @@ class ViewController: UIViewController {
 
 	private var themes = ["Popular", "Now Playing", "Upcoming", "Top Rated"]
 	var movieData: [List] = []
+
+	var index = IndexPath(item: 0, section: 0)
 	private lazy var themeLabel: UILabel = {
 		let label = UILabel()
 		label.translatesAutoresizingMaskIntoConstraints = false
@@ -59,14 +61,20 @@ class ViewController: UIViewController {
 
 	override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
-		let index = IndexPath(item: 0, section: 0)
 		collectionView(self.themeCollectionView, didSelectItemAt: index)
 	}
 
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
-		let index = IndexPath(item: 0, section: 0)
 		themeCollectionView.selectItem(at: index, animated: false, scrollPosition: [])
+		//last time selected cell save and give it here
+	}
+
+	override func viewDidDisappear(_ animated: Bool) {
+		super.viewDidDisappear(animated)
+		guard let selectedIndex = self.themeCollectionView.indexPathsForSelectedItems?.first else { return }
+		self.index = selectedIndex
+		return
 	}
 
 	override func viewDidLoad() {
