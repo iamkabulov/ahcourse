@@ -31,7 +31,7 @@ class MovieDetailsViewController: UIViewController {
 	}()
 	
 	private lazy var stackView: UIStackView = {
-		let stack = UIStackView(arrangedSubviews: [moviePoster, titleLabel, horizontalStackView, descriptionView])
+		let stack = UIStackView(arrangedSubviews: [moviePoster, titleLabel, horizontalStackView, vStackOverview])
 		stack.translatesAutoresizingMaskIntoConstraints = false
 //		stack.backgroundColor = .red
 		stack.axis = .vertical
@@ -39,7 +39,7 @@ class MovieDetailsViewController: UIViewController {
 //		stack.distribution = .equalSpacing
 //		stack.alignment = .center
 
-		stack.spacing = 20
+		stack.spacing = 40
 		return stack
 	}()
 
@@ -118,13 +118,35 @@ class MovieDetailsViewController: UIViewController {
 		return label
 	}()
 
+	private lazy var vStackOverview: UIStackView = {
+		let stack = UIStackView(arrangedSubviews: [overviewLabel, descriptionView])
+		stack.translatesAutoresizingMaskIntoConstraints = false
+		stack.backgroundColor = .systemGray4
+		stack.axis = .vertical
+		stack.alignment = .center
+		stack.spacing = .zero
+		stack.heightAnchor.constraint(equalToConstant: 250).isActive = true
+//		stack.distribution = .fillProportionally
+		return stack
+	}()
+
+	private lazy var overviewLabel: UILabel = {
+		let label = UILabel()
+		label.translatesAutoresizingMaskIntoConstraints = false
+		label.textAlignment = .center
+		label.font = UIFont.systemFont(ofSize: 28, weight: .bold)
+		label.text = "Overview"
+
+		return label
+	}()
+
 	private lazy var descriptionView: UITextView = {
 		let label = UITextView()
 		label.translatesAutoresizingMaskIntoConstraints = false
-		label.textAlignment = .center
-		label.font = UIFont.systemFont(ofSize: 10, weight: .regular)
-		label.text = "Lorem"
-		label.heightAnchor.constraint(equalToConstant: 400).isActive = true
+		label.font = UIFont.systemFont(ofSize: 14, weight: .regular)
+		label.backgroundColor = .systemGray4
+		label.text = ""
+		label.heightAnchor.constraint(equalToConstant: 150).isActive = true
 		return label
 	}()
 
@@ -159,6 +181,7 @@ class MovieDetailsViewController: UIViewController {
 
 	init(id: Int) {
 		self.id = id
+		print(id)
 		super.init(nibName: nil, bundle: nil)
 	}
 
@@ -206,9 +229,13 @@ extension MovieDetailsViewController {
 
 			genreCollectionView.widthAnchor.constraint(equalToConstant: 170),
 			genreCollectionView.heightAnchor.constraint(equalToConstant: 24),
+
+			descriptionView.leadingAnchor.constraint(equalTo: stackView.leadingAnchor),
+			descriptionView.trailingAnchor.constraint(equalTo: stackView.trailingAnchor),
 		])
 
 		//CHCR
+		descriptionView.setContentHuggingPriority(.defaultHigh, for: .vertical)
 //		moviePoster.setContentHuggingPriority(.defaultHigh, for: .horizontal)
 //		rateImage.setContentHuggingPriority(.defaultHigh, for: .vertical)
 	}
@@ -245,8 +272,9 @@ extension MovieDetailsViewController {
 		rateLabel.text = movieDetail.originalLanguage
 		releaseDate.text = movieDetail.releaseDate
 		titleLabel.text = movieDetail.originalTitle
-		rateLabel.text = movieDetail.imdbID
-		viewsLabel.text = movieDetail.status
+		rateLabel.text = "\(movieDetail.voteAverage)/10"
+		viewsLabel.text = "\(movieDetail.voteCount)"
+		descriptionView.text = movieDetail.overview
 	}
 }
 
