@@ -91,6 +91,8 @@ class MovieDetailsViewController: UIViewController {
 //		view.contentMode = .scaleAspectFit
 		view.translatesAutoresizingMaskIntoConstraints = false
 //		view.backgroundColor = .green
+		view.heightAnchor.constraint(equalToConstant: 24).isActive = true
+		view.widthAnchor.constraint(equalToConstant: 170).isActive = true
 		return view
 	}()
 
@@ -196,7 +198,7 @@ class MovieDetailsViewController: UIViewController {
 		let label = UILabel()
 		label.translatesAutoresizingMaskIntoConstraints = false
 		label.textAlignment = .center
-		label.backgroundColor = .brown
+//		label.backgroundColor = .brown
 		label.font = UIFont.systemFont(ofSize: 24, weight: .semibold)
 		label.text = "Cast"
 		return label
@@ -212,10 +214,11 @@ class MovieDetailsViewController: UIViewController {
 
 		view.dataSource = self
 		view.delegate = self
-		view.register(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCell.identifier)
+		view.register(CastCollectionViewCell.self, forCellWithReuseIdentifier: CastCollectionViewCell.identifier)
 //		view.contentMode = .scaleAspectFit
 		view.translatesAutoresizingMaskIntoConstraints = false
-		view.backgroundColor = .green
+//		view.backgroundColor = .green
+		view.heightAnchor.constraint(equalToConstant: 60).isActive = true
 		return view
 	}()
 
@@ -295,9 +298,6 @@ extension MovieDetailsViewController {
 			stackView.bottomAnchor.constraint(equalTo: self.scrollView.contentLayoutGuide.bottomAnchor, constant: 0),
 			stackView.widthAnchor.constraint(equalTo: self.scrollView.frameLayoutGuide.widthAnchor, constant: 0),
 
-			genreCollectionView.widthAnchor.constraint(equalToConstant: 170),
-			genreCollectionView.heightAnchor.constraint(equalToConstant: 24),
-
 			descriptionView.leadingAnchor.constraint(equalTo: stackView.leadingAnchor),
 			descriptionView.trailingAnchor.constraint(equalTo: stackView.trailingAnchor),
 
@@ -307,7 +307,6 @@ extension MovieDetailsViewController {
 			hStackRateImage.trailingAnchor.constraint(equalTo: vStackRateAndViews.trailingAnchor, constant: -10),
 			rateLabel.trailingAnchor.constraint(equalTo: vStackRateAndViews.trailingAnchor, constant: -10),
 			viewsLabel.trailingAnchor.constraint(equalTo: vStackRateAndViews.trailingAnchor, constant: -10),
-			castCollectionView.heightAnchor.constraint(equalToConstant: 100)
 		])
 
 		//CHCR
@@ -394,25 +393,47 @@ extension MovieDetailsViewController {
 
 extension MovieDetailsViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-		guard let data = movieData else { return 2 }
-		guard let genres = data.genres else { return 2 }
-		return genres.count
+		if collectionView == genreCollectionView {
+			guard let data = movieData else { return 2 }
+			guard let genres = data.genres else { return 2 }
+			return genres.count
+		}
+		else if collectionView == castCollectionView {
+			return 4
+		}
+		return 10
 	}
 	
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-		guard let cell = self.genreCollectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.identifier, for: indexPath) as? CollectionViewCell else { return UICollectionViewCell() }
-		guard let data = movieData else {
+		if collectionView == genreCollectionView {
+			guard let cell = self.genreCollectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.identifier, for: indexPath) as? CollectionViewCell else { return UICollectionViewCell() }
+			guard let data = movieData else {
 
-			cell.nameOfButton.text = "Genre"
+				cell.nameOfButton.text = "Genre"
+				return cell
+			}
+			cell.nameOfButton.textColor = .white
+			cell.contentView.backgroundColor = .blue
+			cell.nameOfButton.text = data.genres?[indexPath.row].name
+			return cell
+		} 
+		else if collectionView == castCollectionView {
+			guard let cell = self.castCollectionView.dequeueReusableCell(withReuseIdentifier: CastCollectionViewCell.identifier, for: indexPath) as? CastCollectionViewCell else { return UICollectionViewCell() }
+			guard let data = movieData else {
+				return cell
+			}
 			return cell
 		}
-		cell.nameOfButton.textColor = .white
-		cell.contentView.backgroundColor = .blue
-		cell.nameOfButton.text = data.genres?[indexPath.row].name
-		return cell
+		return UICollectionViewCell()
 	}
 
 	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-		return CGSize(width: 80, height: 24)
+		if collectionView == genreCollectionView {
+			return CGSize(width: 80, height: 24)
+		}
+		else if collectionView == castCollectionView {
+			return CGSize(width: 170, height: 60)
+		}
+		return CGSize(width: 100, height: 100)
 	}
 }
