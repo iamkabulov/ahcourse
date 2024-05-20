@@ -60,13 +60,13 @@ class MovieDetailsViewController: UIViewController {
 //		stack.backgroundColor = .cyan
 		stack.axis = .vertical
 		stack.spacing = 14
-//		stack.alignment = .leading
+		stack.alignment = .center
 //		stack.distribution = .equalSpacing
 		return stack
 	}()
 
 	private lazy var vStackRateAndViews: UIStackView = {
-		let stack = UIStackView(arrangedSubviews: [rateImage, rateLabel, viewsLabel])
+		let stack = UIStackView(arrangedSubviews: [hStackRateImage, rateLabel, viewsLabel])
 		stack.translatesAutoresizingMaskIntoConstraints = false
 //		stack.backgroundColor = .cyan
 		stack.axis = .vertical
@@ -96,16 +96,67 @@ class MovieDetailsViewController: UIViewController {
 	private lazy var moviePoster: UIImageView = {
 		let image = UIImageView()
 		image.translatesAutoresizingMaskIntoConstraints = false
-		image.image = UIImage(named: "movie")
+		image.image = UIImage(named: "whiteBackground")
 		image.contentMode = .scaleAspectFit
+		image.heightAnchor.constraint(equalToConstant: 424).isActive = true
+//		image.widthAnchor.constraint(equalToConstant: 309).isActive = true
 		return image
+	}()
+
+	private lazy var hStackRateImage: UIStackView = {
+		let stack = UIStackView(arrangedSubviews: [rateImage, rateImage2, rateImage3, rateImage4, rateImage5])
+		stack.translatesAutoresizingMaskIntoConstraints = false
+//		stack.backgroundColor = .cyan
+		stack.axis = .horizontal
+		stack.distribution = .equalSpacing
+		stack.alignment = .center
+		stack.spacing = .zero
+		stack.heightAnchor.constraint(equalToConstant: 18).isActive = true
+		return stack
 	}()
 
 	private lazy var rateImage: UIImageView = {
 		let image = UIImageView()
 		image.translatesAutoresizingMaskIntoConstraints = false
-		image.image = UIImage(named: "sampleRate")
-		image.contentMode = .scaleAspectFit
+		image.image = UIImage(named: "ustar")
+		image.widthAnchor.constraint(equalToConstant: 20).isActive = true
+		image.contentMode = .scaleToFill
+		return image
+	}()
+
+	private lazy var rateImage2: UIImageView = {
+		let image = UIImageView()
+		image.translatesAutoresizingMaskIntoConstraints = false
+		image.image = UIImage(named: "ustar")
+		image.contentMode = .scaleToFill
+		image.widthAnchor.constraint(equalToConstant: 20).isActive = true
+		return image
+	}()
+
+	private lazy var rateImage3: UIImageView = {
+		let image = UIImageView()
+		image.translatesAutoresizingMaskIntoConstraints = false
+		image.image = UIImage(named: "ustar")
+		image.contentMode = .scaleToFill
+		image.widthAnchor.constraint(equalToConstant: 20).isActive = true
+		return image
+	}()
+
+	private lazy var rateImage4: UIImageView = {
+		let image = UIImageView()
+		image.translatesAutoresizingMaskIntoConstraints = false
+		image.image = UIImage(named: "ustar")
+		image.contentMode = .scaleToFill
+		image.widthAnchor.constraint(equalToConstant: 20).isActive = true
+		return image
+	}()
+
+	private lazy var rateImage5: UIImageView = {
+		let image = UIImageView()
+		image.translatesAutoresizingMaskIntoConstraints = false
+		image.image = UIImage(named: "ustar")
+		image.contentMode = .scaleToFill
+		image.widthAnchor.constraint(equalToConstant: 20).isActive = true
 		return image
 	}()
 
@@ -175,7 +226,7 @@ class MovieDetailsViewController: UIViewController {
 		label.translatesAutoresizingMaskIntoConstraints = false
 //		label.textAlignment = .
 		label.font = UIFont.systemFont(ofSize: 20, weight: .light)
-		label.text = "movieData?.releaseDate"
+		label.text = "Release date"
 		return label
 	}()
 
@@ -212,10 +263,10 @@ extension MovieDetailsViewController {
 			scrollView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor),
 			//STACK
 			stackView.topAnchor.constraint(equalTo: self.scrollView.contentLayoutGuide.topAnchor, constant: 0),
-			stackView.leadingAnchor.constraint(equalTo: self.scrollView.contentLayoutGuide.leadingAnchor, constant: 10),
-			stackView.trailingAnchor.constraint(equalTo: self.scrollView.contentLayoutGuide.trailingAnchor, constant: -10),
+			stackView.leadingAnchor.constraint(equalTo: self.scrollView.contentLayoutGuide.leadingAnchor, constant: 0),
+			stackView.trailingAnchor.constraint(equalTo: self.scrollView.contentLayoutGuide.trailingAnchor, constant: 0),
 			stackView.bottomAnchor.constraint(equalTo: self.scrollView.contentLayoutGuide.bottomAnchor, constant: 0),
-			stackView.widthAnchor.constraint(equalTo: self.scrollView.frameLayoutGuide.widthAnchor, constant: -20),
+			stackView.widthAnchor.constraint(equalTo: self.scrollView.frameLayoutGuide.widthAnchor, constant: 0),
 			//POSTER
 //			moviePoster.topAnchor.constraint(equalTo: self.stackView.topAnchor),
 //			moviePoster.leadingAnchor.constraint(equalTo: self.stackView.leadingAnchor),
@@ -232,10 +283,18 @@ extension MovieDetailsViewController {
 
 			descriptionView.leadingAnchor.constraint(equalTo: stackView.leadingAnchor),
 			descriptionView.trailingAnchor.constraint(equalTo: stackView.trailingAnchor),
+
+			releaseDate.leadingAnchor.constraint(equalTo: vStackDateAndGenre.leadingAnchor, constant: 10),
+			genreCollectionView.leadingAnchor.constraint(equalTo: vStackDateAndGenre.leadingAnchor, constant: 10),
+
+			hStackRateImage.trailingAnchor.constraint(equalTo: vStackRateAndViews.trailingAnchor, constant: -10),
+			rateLabel.trailingAnchor.constraint(equalTo: vStackRateAndViews.trailingAnchor, constant: -10),
+			viewsLabel.trailingAnchor.constraint(equalTo: vStackRateAndViews.trailingAnchor, constant: -10),
+//			vStackRateAndViews.trailingAnchor.constraint(equalTo: stackView.trailingAnchor, constant: -10),
 		])
 
 		//CHCR
-		descriptionView.setContentHuggingPriority(.defaultHigh, for: .vertical)
+//		descriptionView.setContentHuggingPriority(.defaultHigh, for: .vertical)
 //		moviePoster.setContentHuggingPriority(.defaultHigh, for: .horizontal)
 //		rateImage.setContentHuggingPriority(.defaultHigh, for: .vertical)
 	}
@@ -258,6 +317,7 @@ extension MovieDetailsViewController {
 					guard let detail = self.movieData else { return }
 					DispatchQueue.main.async {
 						self.setData(detail)
+						self.loadImage(from: detail.posterPath ?? "")
 					}
 					genreCollectionView.reloadData()
 					return
@@ -268,13 +328,46 @@ extension MovieDetailsViewController {
 		}.resume()
 	}
 
+	func loadImage(from url: String) {
+		if let urlString = URL(string: "https://image.tmdb.org/t/p/w500\(url)") {
+			DispatchQueue.global().async {
+				guard let data = try? Data(contentsOf: urlString), let image = UIImage(data: data) else {
+					return
+				}
+				DispatchQueue.main.async {
+					self.moviePoster.image = image
+				}
+			}
+		}
+	}
+
 	func setData(_ movieDetail: MovieDetailEntity) {
+		let rate = movieDetail.voteAverage ?? 0
+		let views = movieDetail.voteCount ?? 0
 		rateLabel.text = movieDetail.originalLanguage
 		releaseDate.text = movieDetail.releaseDate
 		titleLabel.text = movieDetail.originalTitle
-		rateLabel.text = "\(movieDetail.voteAverage)/10"
-		viewsLabel.text = "\(movieDetail.voteCount)"
+		rateLabel.text = "\(rate)/10"
+		viewsLabel.text = "\(views)"
 		descriptionView.text = movieDetail.overview
+		rateImagesCalculate(movieDetail.voteAverage ?? 6.0)
+	}
+
+	func rateImagesCalculate(_ rate: Double) {
+		let result = rate / 2
+		let whole = Int(floor(result))
+		let decimal = result.truncatingRemainder(dividingBy: 1)
+		setRateImages(whole: whole, decimal: decimal)
+	}
+
+	func setRateImages(whole: Int, decimal: Double) {
+		let imagesView = [rateImage, rateImage2, rateImage3, rateImage4, rateImage5]
+		for i in 0..<whole {
+			imagesView[i].image = UIImage(named: "fstar")
+		}
+		if whole > 0 {
+			imagesView[whole].image = UIImage(named: "pstar")
+		}
 	}
 }
 
@@ -282,7 +375,8 @@ extension MovieDetailsViewController {
 extension MovieDetailsViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 		guard let data = movieData else { return 2 }
-		return data.genres.count
+		guard let genres = data.genres else { return 2 }
+		return genres.count
 	}
 	
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -294,7 +388,7 @@ extension MovieDetailsViewController: UICollectionViewDelegate, UICollectionView
 		}
 		cell.nameOfButton.textColor = .white
 		cell.contentView.backgroundColor = .blue
-		cell.nameOfButton.text = data.genres[indexPath.row].name
+		cell.nameOfButton.text = data.genres?[indexPath.row].name
 		return cell
 	}
 
