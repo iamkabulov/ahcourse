@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 
 class MovieDetailsViewController: UIViewController {
 	
@@ -31,7 +32,7 @@ class MovieDetailsViewController: UIViewController {
 	}()
 	
 	private lazy var stackView: UIStackView = {
-		let stack = UIStackView(arrangedSubviews: [moviePoster, titleLabel, horizontalStackView, vStackOverview])
+		let stack = UIStackView(arrangedSubviews: [moviePoster, titleLabel, horizontalStackView, vStackOverview, castLabel, castCollectionView])
 		stack.translatesAutoresizingMaskIntoConstraints = false
 //		stack.backgroundColor = .red
 		stack.axis = .vertical
@@ -176,7 +177,7 @@ class MovieDetailsViewController: UIViewController {
 		stack.axis = .vertical
 		stack.alignment = .center
 		stack.spacing = .zero
-		stack.heightAnchor.constraint(equalToConstant: 250).isActive = true
+		stack.heightAnchor.constraint(equalToConstant: 350).isActive = true
 //		stack.distribution = .fillProportionally
 		return stack
 	}()
@@ -185,10 +186,37 @@ class MovieDetailsViewController: UIViewController {
 		let label = UILabel()
 		label.translatesAutoresizingMaskIntoConstraints = false
 		label.textAlignment = .center
-		label.font = UIFont.systemFont(ofSize: 28, weight: .bold)
+		label.font = UIFont.systemFont(ofSize: 24, weight: .semibold)
 		label.text = "Overview"
 
 		return label
+	}()
+
+	private lazy var castLabel: UILabel = {
+		let label = UILabel()
+		label.translatesAutoresizingMaskIntoConstraints = false
+		label.textAlignment = .center
+		label.backgroundColor = .brown
+		label.font = UIFont.systemFont(ofSize: 24, weight: .semibold)
+		label.text = "Cast"
+		return label
+	}()
+
+	private lazy var castCollectionView: UICollectionView = {
+		let layout = UICollectionViewFlowLayout()
+		layout.scrollDirection = .horizontal
+		let view = UICollectionView(
+			frame: .zero,
+			collectionViewLayout: layout
+		)
+
+		view.dataSource = self
+		view.delegate = self
+		view.register(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCell.identifier)
+//		view.contentMode = .scaleAspectFit
+		view.translatesAutoresizingMaskIntoConstraints = false
+		view.backgroundColor = .green
+		return view
 	}()
 
 	private lazy var descriptionView: UITextView = {
@@ -197,7 +225,7 @@ class MovieDetailsViewController: UIViewController {
 		label.font = UIFont.systemFont(ofSize: 14, weight: .regular)
 		label.backgroundColor = .systemGray4
 		label.text = ""
-		label.heightAnchor.constraint(equalToConstant: 150).isActive = true
+		label.heightAnchor.constraint(equalToConstant: 250).isActive = true
 		return label
 	}()
 
@@ -217,7 +245,6 @@ class MovieDetailsViewController: UIViewController {
 		label.textAlignment = .center
 		label.font = UIFont.systemFont(ofSize: 48, weight: .bold)
 		label.numberOfLines = 0
-		label.text = movieData?.originalTitle
 		return label
 	}()
 
@@ -267,16 +294,6 @@ extension MovieDetailsViewController {
 			stackView.trailingAnchor.constraint(equalTo: self.scrollView.contentLayoutGuide.trailingAnchor, constant: 0),
 			stackView.bottomAnchor.constraint(equalTo: self.scrollView.contentLayoutGuide.bottomAnchor, constant: 0),
 			stackView.widthAnchor.constraint(equalTo: self.scrollView.frameLayoutGuide.widthAnchor, constant: 0),
-			//POSTER
-//			moviePoster.topAnchor.constraint(equalTo: self.stackView.topAnchor),
-//			moviePoster.leadingAnchor.constraint(equalTo: self.stackView.leadingAnchor),
-//			moviePoster.trailingAnchor.constraint(equalTo: self.stackView.trailingAnchor),
-			//OTHERS
-//			horizontalStackView.topAnchor.constraint(equalTo: self.titleLabel.bottomAnchor),
-//			horizontalStackView.heightAnchor.constraint(equalToConstant: 100),
-//			releaseDate.leadingAnchor.constraint(equalTo: vStackDateAndGenre.leadingAnchor, constant: 15),
-//			genreCollectionView.leadingAnchor.constraint(equalTo: releaseDate.leadingAnchor),
-//			rateImage.trailingAnchor.constraint(equalTo: vStackRateAndViews.trailingAnchor, constant: -15),
 
 			genreCollectionView.widthAnchor.constraint(equalToConstant: 170),
 			genreCollectionView.heightAnchor.constraint(equalToConstant: 24),
@@ -290,10 +307,11 @@ extension MovieDetailsViewController {
 			hStackRateImage.trailingAnchor.constraint(equalTo: vStackRateAndViews.trailingAnchor, constant: -10),
 			rateLabel.trailingAnchor.constraint(equalTo: vStackRateAndViews.trailingAnchor, constant: -10),
 			viewsLabel.trailingAnchor.constraint(equalTo: vStackRateAndViews.trailingAnchor, constant: -10),
-//			vStackRateAndViews.trailingAnchor.constraint(equalTo: stackView.trailingAnchor, constant: -10),
+			castCollectionView.heightAnchor.constraint(equalToConstant: 100)
 		])
 
 		//CHCR
+//		overviewLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
 //		descriptionView.setContentHuggingPriority(.defaultHigh, for: .vertical)
 //		moviePoster.setContentHuggingPriority(.defaultHigh, for: .horizontal)
 //		rateImage.setContentHuggingPriority(.defaultHigh, for: .vertical)
@@ -344,6 +362,8 @@ extension MovieDetailsViewController {
 	func setData(_ movieDetail: MovieDetailEntity) {
 		let rate = movieDetail.voteAverage ?? 0
 		let views = movieDetail.voteCount ?? 0
+
+		titleLabel.text = movieDetail.originalTitle
 		rateLabel.text = movieDetail.originalLanguage
 		releaseDate.text = movieDetail.releaseDate
 		titleLabel.text = movieDetail.originalTitle
