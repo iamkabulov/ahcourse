@@ -33,14 +33,9 @@ class MovieDetailsViewController: UIViewController {
 	}()
 	
 	private lazy var stackView: UIStackView = {
-		let stack = UIStackView(arrangedSubviews: [moviePoster, titleLabel, horizontalStackView, vStackOverview, castLabel, castCollectionView])
+		let stack = UIStackView(arrangedSubviews: [moviePoster, titleLabel, horizontalStackView, vStackOverview, castLabel, castCollectionView, linkLabel, hStackLink, hStackButton])
 		stack.translatesAutoresizingMaskIntoConstraints = false
-//		stack.backgroundColor = .red
 		stack.axis = .vertical
-//		stack.contentMode = .center
-//		stack.distribution = .equalSpacing
-//		stack.alignment = .center
-
 		stack.spacing = 40
 		return stack
 	}()
@@ -48,7 +43,6 @@ class MovieDetailsViewController: UIViewController {
 	private lazy var horizontalStackView: UIStackView = {
 		let stack = UIStackView(arrangedSubviews: [vStackDateAndGenre, vStackRateAndViews])
 		stack.translatesAutoresizingMaskIntoConstraints = false
-//		stack.backgroundColor = .gray
 		stack.axis = .horizontal
 		stack.distribution = .equalSpacing
 		stack.alignment = .center
@@ -59,22 +53,18 @@ class MovieDetailsViewController: UIViewController {
 	private lazy var vStackDateAndGenre: UIStackView = {
 		let stack = UIStackView(arrangedSubviews: [releaseDate, genreCollectionView])
 		stack.translatesAutoresizingMaskIntoConstraints = false
-//		stack.backgroundColor = .cyan
 		stack.axis = .vertical
 		stack.spacing = 14
 		stack.alignment = .center
-//		stack.distribution = .equalSpacing
 		return stack
 	}()
 
 	private lazy var vStackRateAndViews: UIStackView = {
 		let stack = UIStackView(arrangedSubviews: [hStackRateImage, rateLabel, viewsLabel])
 		stack.translatesAutoresizingMaskIntoConstraints = false
-//		stack.backgroundColor = .cyan
 		stack.axis = .vertical
 		stack.alignment = .center
 		stack.spacing = 2
-//		stack.distribution = .fillProportionally
 		return stack
 	}()
 
@@ -89,9 +79,7 @@ class MovieDetailsViewController: UIViewController {
 		view.dataSource = self
 		view.delegate = self
 		view.register(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCell.identifier)
-//		view.contentMode = .scaleAspectFit
 		view.translatesAutoresizingMaskIntoConstraints = false
-//		view.backgroundColor = .green
 		view.heightAnchor.constraint(equalToConstant: 24).isActive = true
 		view.widthAnchor.constraint(equalToConstant: 170).isActive = true
 		return view
@@ -174,14 +162,16 @@ class MovieDetailsViewController: UIViewController {
 	}()
 
 	private lazy var vStackOverview: UIStackView = {
-		let stack = UIStackView(arrangedSubviews: [overviewLabel, descriptionView])
+		let stack = UIStackView(arrangedSubviews: [
+													UIView(frame: CGRect(x: 0, y: 0, width: 5, height: 10)),
+													overviewLabel,
+													descriptionView,
+													UIView(frame: CGRect(x: 0, y: 0, width: 5, height: 5)),])
 		stack.translatesAutoresizingMaskIntoConstraints = false
 		stack.backgroundColor = .systemGray4
 		stack.axis = .vertical
-		stack.alignment = .center
-		stack.spacing = .zero
-		stack.heightAnchor.constraint(equalToConstant: 350).isActive = true
-//		stack.distribution = .fillProportionally
+		stack.spacing = 30
+		stack.distribution = .fill
 		return stack
 	}()
 
@@ -223,13 +213,67 @@ class MovieDetailsViewController: UIViewController {
 		return view
 	}()
 
+	private lazy var hStackLink: UIStackView = {
+		let stack = UIStackView()
+		stack.addSubview(imdb)
+		stack.addSubview(instagram)
+		stack.addSubview(facebook)
+		stack.translatesAutoresizingMaskIntoConstraints = false
+		stack.axis = .horizontal
+		stack.heightAnchor.constraint(equalToConstant: 60).isActive = true
+		return stack
+	}()
+
+	private lazy var linkLabel: UILabel = {
+		let label = UILabel()
+		label.translatesAutoresizingMaskIntoConstraints = false
+		label.textAlignment = .center
+//		label.backgroundColor = .brown
+		label.font = UIFont.systemFont(ofSize: 24, weight: .semibold)
+		label.text = "Link"
+		return label
+	}()
+
+	private lazy var imdb: UIImageView = {
+		let image = UIImageView()
+		image.translatesAutoresizingMaskIntoConstraints = false
+		image.image = UIImage(named: "imdb")
+		image.contentMode = .scaleAspectFit
+		image.heightAnchor.constraint(equalToConstant: 40).isActive = true
+		image.widthAnchor.constraint(equalToConstant: 60).isActive = true
+		return image
+	}()
+
+	private lazy var instagram: UIImageView = {
+		let image = UIImageView()
+		image.translatesAutoresizingMaskIntoConstraints = false
+		image.image = UIImage(named: "youtube")
+		image.contentMode = .scaleAspectFit
+		image.heightAnchor.constraint(equalToConstant: 40).isActive = true
+		image.widthAnchor.constraint(equalToConstant: 60).isActive = true
+		return image
+	}()
+
+	private lazy var facebook: UIImageView = {
+		let image = UIImageView()
+		image.translatesAutoresizingMaskIntoConstraints = false
+		image.image = UIImage(named: "meta")
+		image.contentMode = .scaleAspectFit
+		image.heightAnchor.constraint(equalToConstant: 40).isActive = true
+		image.widthAnchor.constraint(equalToConstant: 60).isActive = true
+		return image
+	}()
+
 	private lazy var descriptionView: UITextView = {
 		let label = UITextView()
 		label.translatesAutoresizingMaskIntoConstraints = false
+		label.isUserInteractionEnabled = false
+		label.sizeToFit()
+		label.isScrollEnabled = false
 		label.font = UIFont.systemFont(ofSize: 14, weight: .regular)
 		label.backgroundColor = .systemGray4
 		label.text = ""
-		label.heightAnchor.constraint(equalToConstant: 250).isActive = true
+//		label.heightAnchor.constraint(equalToConstant: 250).isActive = true
 		return label
 	}()
 
@@ -255,10 +299,31 @@ class MovieDetailsViewController: UIViewController {
 	private lazy var releaseDate: UILabel = {
 		let label = UILabel()
 		label.translatesAutoresizingMaskIntoConstraints = false
-//		label.textAlignment = .
 		label.font = UIFont.systemFont(ofSize: 20, weight: .light)
 		label.text = "Release date"
 		return label
+	}()
+
+	private lazy var hStackButton: UIStackView = {
+		let stack = UIStackView()
+		stack.addSubview(addWatchList)
+		stack.translatesAutoresizingMaskIntoConstraints = false
+		stack.axis = .horizontal
+		stack.heightAnchor.constraint(equalToConstant: 60).isActive = true
+		return stack
+	}()
+
+	private lazy var addWatchList: UIButton = {
+		let button = UIButton(type: .system)
+		button.translatesAutoresizingMaskIntoConstraints = false
+		button.setTitle("Add To Watch List", for: .normal)
+		button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+		button.backgroundColor = UIColor(red: 0.16, green: 0.38, blue: 0.94, alpha: 1.00)
+		button.tintColor = .white
+		button.heightAnchor.constraint(equalToConstant: 40).isActive = true
+		button.layer.cornerRadius = 15
+		button.clipsToBounds = true
+		return button
 	}()
 
 	init(id: Int) {
@@ -275,7 +340,8 @@ class MovieDetailsViewController: UIViewController {
 		super.viewDidLoad()
 		self.view.backgroundColor = .white
 		self.title = "Movie"
-//		self.view = self.scrollView
+		self.navigationController?.navigationBar.topItem?.title = ""
+		self.navigationController?.navigationBar.tintColor = .black
 		setupView()
 		getDetailInfo(id: id)
 		genreCollectionView.reloadData()
@@ -310,13 +376,13 @@ extension MovieDetailsViewController {
 			hStackRateImage.trailingAnchor.constraint(equalTo: vStackRateAndViews.trailingAnchor, constant: -10),
 			rateLabel.trailingAnchor.constraint(equalTo: vStackRateAndViews.trailingAnchor, constant: -10),
 			viewsLabel.trailingAnchor.constraint(equalTo: vStackRateAndViews.trailingAnchor, constant: -10),
+			imdb.leadingAnchor.constraint(equalTo: hStackLink.leadingAnchor, constant: 96),
+			instagram.leadingAnchor.constraint(equalTo: imdb.trailingAnchor, constant: 10),
+			facebook.leadingAnchor.constraint(equalTo: instagram.trailingAnchor, constant: 10),
+			addWatchList.leadingAnchor.constraint(equalTo: hStackButton.leadingAnchor, constant: 80),
+			addWatchList.trailingAnchor.constraint(equalTo: hStackButton.trailingAnchor, constant: -80),
+			addWatchList.bottomAnchor.constraint(equalTo: stackView.bottomAnchor, constant: -10)
 		])
-
-		//CHCR
-//		overviewLabel.setContentHuggingPriority(.defaultLow, for: .vertical)
-//		descriptionView.setContentHuggingPriority(.defaultHigh, for: .vertical)
-//		moviePoster.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-//		rateImage.setContentHuggingPriority(.defaultHigh, for: .vertical)
 	}
 
 
@@ -361,7 +427,7 @@ extension MovieDetailsViewController {
 				do {
 					let response = try JSONDecoder().decode(CastEntity.self, from: data)
 					self.castData = response
-					guard let detail = self.castData else { return }
+					guard self.castData != nil else { return }
 
 					castCollectionView.reloadData()
 					return
@@ -415,6 +481,10 @@ extension MovieDetailsViewController {
 			imagesView[whole].image = UIImage(named: "pstar")
 		}
 	}
+
+	@objc func buttonTapped() {
+		print("Button Tapped")
+	}
 }
 
 
@@ -447,7 +517,20 @@ extension MovieDetailsViewController: UICollectionViewDelegate, UICollectionView
 		else if collectionView == castCollectionView {
 			guard let cell = self.castCollectionView.dequeueReusableCell(withReuseIdentifier: CastCollectionViewCell.identifier, for: indexPath) as? CastCollectionViewCell else { return UICollectionViewCell() }
 			guard let data = self.castData else {
-				cell.setData(Cast(adult: true, gender: 1, id: 1, knownForDepartment: "A", name: "Tom", originalName: "Hardy", popularity: 2.0, profilePath: nil, castID: nil, character: "Venom", creditID: "id", order: nil, department: "AS", job: "NOP"))
+				cell.setData( Cast(adult: true,
+									 gender: 1,
+									 id: 1,
+									 knownForDepartment: "A",
+									 name: "Tom",
+									 originalName: "Hardy",
+									 popularity: 2.0,
+									 profilePath: nil,
+									 castID: nil,
+									 character: "Venom",
+									 creditID: "id",
+									 order: nil,
+									 department: "AS",
+									 job: "NOP"))
 				return cell
 			}
 			cell.setData(data.cast[indexPath.row])
