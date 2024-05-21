@@ -12,7 +12,8 @@ class CastCollectionViewCell: UICollectionViewCell {
 	static var identifier: String {
 		return String(describing: self)
 	}
-
+	
+	private var path: String?
 	private lazy var vStackView: UIStackView = {
 		let stack = UIStackView()
 		stack.addSubview(artistName)
@@ -39,24 +40,30 @@ class CastCollectionViewCell: UICollectionViewCell {
 //		stack.distribution = .equalSpacing
 //		stack.alignment = .center
 
-		stack.spacing = 10
+		stack.spacing = .zero
 		return stack
 	}()
 
 	private lazy var heroName: UILabel = {
 		let label = UILabel()
 		label.translatesAutoresizingMaskIntoConstraints = false
-		label.font = UIFont.systemFont(ofSize: 16, weight: .light)
+		label.font = UIFont.systemFont(ofSize: 14, weight: .light)
 		label.textAlignment = .center
-		label.textColor = .systemGray3
+		label.textColor = .systemGray
 		label.text = "Venom"
 		return label
+	}()
+
+	private lazy var spinner: UIActivityIndicatorView = {
+		let spinner = UIActivityIndicatorView(style: .medium)
+		spinner.translatesAutoresizingMaskIntoConstraints = false
+		return spinner
 	}()
 
 	private lazy var artistName: UILabel = {
 		let label = UILabel()
 		label.translatesAutoresizingMaskIntoConstraints = false
-		label.font = UIFont.systemFont(ofSize: 16, weight: .regular)
+		label.font = UIFont.systemFont(ofSize: 14, weight: .regular)
 		label.textAlignment = .center
 		label.text = "Tom Hardy"
 		return label
@@ -65,7 +72,7 @@ class CastCollectionViewCell: UICollectionViewCell {
 	private lazy var artistImage: UIImageView = {
 		let image = UIImageView()
 		image.translatesAutoresizingMaskIntoConstraints = false
-		image.image = UIImage(named: "movie")
+		image.image = UIImage(named: "whiteBackground")
 		image.contentMode = .scaleAspectFill
 		image.heightAnchor.constraint(equalToConstant: 60).isActive = true
 		image.widthAnchor.constraint(equalToConstant: 60).isActive = true
@@ -86,6 +93,12 @@ class CastCollectionViewCell: UICollectionViewCell {
 	required init?(coder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
 	}
+
+	override func prepareForReuse() {
+		super.prepareForReuse()
+		contentView.layoutIfNeeded()
+		artistImage.image = UIImage(named: "whiteBackground")
+	}
 }
 
 extension CastCollectionViewCell {
@@ -96,16 +109,58 @@ extension CastCollectionViewCell {
 		}
 		artistImage.snp.makeConstraints { make in
 			make.top.equalTo(hStackView.snp.top)
-			make.left.equalTo(hStackView.snp.left).offset(10)
+			make.left.equalTo(hStackView.snp.left).offset(5)
 		}
 		artistName.snp.makeConstraints { make in
 			make.top.equalTo(vStackView.snp.top).offset(15)
-			make.left.equalTo(artistImage.snp.right).offset(10)
+			make.left.equalTo(artistImage.snp.right).offset(5)
 		}
 		heroName.snp.makeConstraints { make in
 			make.bottom.equalTo(artistName.snp.bottom).offset(15)
-			make.left.equalTo(artistImage.snp.right).offset(10)
+			make.left.equalTo(artistImage.snp.right).offset(5)
 		}
+	}
+
+	func setData(_ data: Cast) {
+		artistName.text = data.name
+		heroName.text = data.character
+		setImage(img: nil)
+		loadImage(from: data.profilePath ?? "")
+	}
+
+	func loadImage(from url: String) {
+		path = url
+		if let urlString = URL(string: "https://image.tmdb.org/t/p/w500\(url)") {
+			DispatchQueue.global().async {
+				guard let data = try? Data(contentsOf: urlString), let image = UIImage(data: data) else {
+					return
+				}
+				DispatchQueue.main.async {
+					if url == self.path {
+						self.setImage(img: image)
+					}
+				}
+			}
+		}
+	}
+
+	func setImage(img: UIImage?) {
+		guard let img = img else {
+			hStackView.addSubview(spinner)
+			spinner.startAnimating()
+			spinner.isHidden = false
+			spinner.snp.makeConstraints { make in
+				make.top.equalTo(hStackView.snp.top)
+				make.left.equalTo(hStackView.snp.left).offset(24)
+				make.height.equalTo(artistImage)
+			}
+			contentView.layoutIfNeeded()
+			return
+		}
+		self.spinner.stopAnimating()
+		self.spinner.isHidden = true
+		self.artistImage.image = img
+		self.contentView.layoutIfNeeded()
 	}
 }
 

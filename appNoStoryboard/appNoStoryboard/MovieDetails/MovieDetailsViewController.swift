@@ -12,6 +12,7 @@ class MovieDetailsViewController: UIViewController {
 	
 	private var id: Int
 	private var movieData: MovieDetailEntity?
+	private var castData: CastEntity?
 	private let session = URLSession(configuration: .default)
 	lazy private var urlComponent: URLComponents = {
 		var component = URLComponents()
@@ -84,7 +85,7 @@ class MovieDetailsViewController: UIViewController {
 			frame: .zero,
 			collectionViewLayout: layout
 		)
-
+		view.showsHorizontalScrollIndicator = false
 		view.dataSource = self
 		view.delegate = self
 		view.register(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCell.identifier)
@@ -211,7 +212,7 @@ class MovieDetailsViewController: UIViewController {
 			frame: .zero,
 			collectionViewLayout: layout
 		)
-
+		view.showsHorizontalScrollIndicator = false
 		view.dataSource = self
 		view.delegate = self
 		view.register(CastCollectionViewCell.self, forCellWithReuseIdentifier: CastCollectionViewCell.identifier)
@@ -278,6 +279,8 @@ class MovieDetailsViewController: UIViewController {
 		setupView()
 		getDetailInfo(id: id)
 		genreCollectionView.reloadData()
+		getCastInfo(id)
+		castCollectionView.reloadData()
 	}
 }
 
@@ -334,9 +337,33 @@ extension MovieDetailsViewController {
 					guard let detail = self.movieData else { return }
 					DispatchQueue.main.async {
 						self.setData(detail)
-						self.loadImage(from: detail.posterPath ?? "")
 					}
+					self.loadImage(from: detail.posterPath ?? "")
 					genreCollectionView.reloadData()
+					return
+				} catch {
+					return print(error)
+				}
+			}
+		}.resume()
+	}
+
+	func getCastInfo(_ id: Int) {
+		self.urlComponent.path = "/3/movie/\(id)/credits"
+
+		guard let requestUrl = self.urlComponent.url else { return }
+
+		session.dataTask(with: requestUrl) { data, response, error in
+			DispatchQueue.main.async(flags: .barrier) { [self] in
+				guard let data = data, error == nil else {
+					return
+				}
+				do {
+					let response = try JSONDecoder().decode(CastEntity.self, from: data)
+					self.castData = response
+					guard let detail = self.castData else { return }
+
+					castCollectionView.reloadData()
 					return
 				} catch {
 					return print(error)
@@ -399,7 +426,7 @@ extension MovieDetailsViewController: UICollectionViewDelegate, UICollectionView
 			return genres.count
 		}
 		else if collectionView == castCollectionView {
-			return 4
+			return self.castData?.cast.count ?? 1
 		}
 		return 10
 	}
@@ -419,9 +446,11 @@ extension MovieDetailsViewController: UICollectionViewDelegate, UICollectionView
 		} 
 		else if collectionView == castCollectionView {
 			guard let cell = self.castCollectionView.dequeueReusableCell(withReuseIdentifier: CastCollectionViewCell.identifier, for: indexPath) as? CastCollectionViewCell else { return UICollectionViewCell() }
-			guard let data = movieData else {
+			guard let data = self.castData else {
+				cell.setData(Cast(adult: true, gender: 1, id: 1, knownForDepartment: "A", name: "Tom", originalName: "Hardy", popularity: 2.0, profilePath: nil, castID: nil, character: "Venom", creditID: "id", order: nil, department: "AS", job: "NOP"))
 				return cell
 			}
+			cell.setData(data.cast[indexPath.row])
 			return cell
 		}
 		return UICollectionViewCell()
@@ -432,7 +461,7 @@ extension MovieDetailsViewController: UICollectionViewDelegate, UICollectionView
 			return CGSize(width: 80, height: 24)
 		}
 		else if collectionView == castCollectionView {
-			return CGSize(width: 170, height: 60)
+			return CGSize(width: 200, height: 60)
 		}
 		return CGSize(width: 100, height: 100)
 	}
