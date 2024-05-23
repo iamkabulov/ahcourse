@@ -11,7 +11,7 @@ class ViewController: UIViewController {
 
 	private var themes = ["Popular", "Now Playing", "Upcoming", "Top Rated"]
 	var movieData: [List] = []
-
+	private let networking = NetworkManager.shared
 	var index = IndexPath(item: 0, section: 0)
 	private lazy var themeLabel: UILabel = {
 		let label = UILabel()
@@ -21,16 +21,7 @@ class ViewController: UIViewController {
 		return label
 	}()
 
-	private let session = URLSession(configuration: .default)
-	lazy private var urlComponent: URLComponents = {
-		var component = URLComponents()
-		component.scheme = "https"
-		component.host = "api.themoviedb.org"
-		component.queryItems = [
-			URLQueryItem(name: "api_key", value: "9863b0919782bd200569d84cf236247b")
-		]
-		return component
-	}()
+	
 
 	lazy var tableView: UITableView = {
 		let view = UITableView()
@@ -67,7 +58,6 @@ class ViewController: UIViewController {
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		themeCollectionView.selectItem(at: index, animated: false, scrollPosition: [])
-		//last time selected cell save and give it here
 	}
 
 	override func viewDidDisappear(_ animated: Bool) {
@@ -84,7 +74,6 @@ class ViewController: UIViewController {
 		self.addView()
 		self.setupView()
 		self.themeCollectionView.allowsMultipleSelection = false
-//		self.getUpcomingMovies()
 	}
 
 
@@ -125,7 +114,6 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
 		guard let cell = self.tableView.dequeueReusableCell(withIdentifier: MovieViewCell.identifier, for: indexPath) as? MovieViewCell else { return UITableViewCell() }
 		cell.setData(movie: movieData[indexPath.row])
 		return cell
-
 	}
 
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -137,107 +125,39 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
 //MARK: - API
 extension ViewController {
 
-	func apiRequests(_ path: String) {
+	func loadMovies(_ path: String) {
 		switch path {
 		case "Upcoming":
-			getUpcomingMovies()
+			networking.getUpcomingMovies { result in
+				self.movieData = result
+				DispatchQueue.main.async {
+					self.tableView.reloadData()
+				}
+			}
 		case "Popular":
-			getPopularMovies()
+			networking.getPopularMovies { result in
+				self.movieData = result
+				DispatchQueue.main.async {
+					self.tableView.reloadData()
+				}
+			}
 		case "Now Playing":
-			getNowPlaying()
+			networking.getNowPlaying { result in
+				self.movieData = result
+				DispatchQueue.main.async {
+					self.tableView.reloadData()
+				}
+			}
 		case "Top Rated":
-			getTopRated()
+			networking.getTopRated { result in
+				self.movieData = result
+				DispatchQueue.main.async {
+					self.tableView.reloadData()
+				}
+			}
 		default:
 			print("Something went wrong.")
 		}
-	}
-
-	func getUpcomingMovies() {
-		self.urlComponent.path = "/3/movie/upcoming"
-
-		guard let requestUrl = self.urlComponent.url else { return }
-
-		session.dataTask(with: requestUrl) { data, response, error in
-			DispatchQueue.main.async(flags: .barrier) { [self] in
-				guard let data = data, error == nil else {
-					return
-				}
-				do {
-					let response = try JSONDecoder().decode(MovieEntity.self, from: data)
-					self.movieData = response.results
-					self.tableView.reloadData()
-					return
-				} catch {
-					return print(error)
-				}
-			}
-		}.resume()
-	}
-
-	func getPopularMovies() {
-		self.urlComponent.path = "/3/movie/popular"
-		guard let requestUrl = urlComponent.url else { return }
-
-		self.session.dataTask(with: requestUrl) { data, response, error in
-			DispatchQueue.main.async(flags: .barrier) { [self] in
-				guard let data = data, error == nil else {
-					print(data ?? "")
-					return
-				}
-				do {
-					let response = try JSONDecoder().decode(PopularMovieEntity.self, from: data)
-					self.movieData = response.results
-					self.tableView.reloadData()
-					return
-				} catch {
-					return print(error)
-				}
-			}
-		}.resume()
-	}
-
-	func getNowPlaying() {
-		self.urlComponent.path = "/3/movie/now_playing"
-
-		guard let requestUrl = self.urlComponent.url else { return }
-
-		session.dataTask(with: requestUrl) { data, response, error in
-			DispatchQueue.main.async(flags: .barrier) { [self] in
-				guard let data = data, error == nil else {
-					return
-				}
-				do {
-					let response = try JSONDecoder().decode(MovieEntity.self, from: data)
-					self.movieData = response.results
-					self.tableView.reloadData()
-					return
-				} catch {
-					return print(error)
-				}
-			}
-		}.resume()
-	}
-
-	func getTopRated() {
-		self.urlComponent.path = "/3/movie/top_rated"
-
-		guard let requestUrl = self.urlComponent.url else { return }
-
-		session.dataTask(with: requestUrl) { data, response, error in
-			DispatchQueue.main.async(flags: .barrier) { [self] in
-				guard let data = data, error == nil else {
-					return
-				}
-				do {
-					let response = try JSONDecoder().decode(TopRated.self, from: data)
-					self.movieData = response.results
-					self.tableView.reloadData()
-					return
-				} catch {
-					return print(error)
-				}
-			}
-		}.resume()
 	}
 }
 
@@ -260,10 +180,11 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, 
 
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		if let cell = collectionView.cellForItem(at: indexPath) as? CollectionViewCell {
-			apiRequests(cell.nameOfButton.text ?? "")
 			cell.contentView.backgroundColor = .red
 			cell.isSelected = true
 			cell.nameOfButton.textColor = .white
+			guard let path = cell.nameOfButton.text else { return }
+			self.loadMovies(path)
 		}
 	}
 
