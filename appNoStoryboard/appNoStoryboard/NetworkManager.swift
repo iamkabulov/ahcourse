@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 
 class NetworkManager {
@@ -17,6 +18,7 @@ class NetworkManager {
 		var component = URLComponents()
 		component.scheme = "https"
 		component.host = "api.themoviedb.org"
+		
 		component.queryItems = [
 			URLQueryItem(name: "api_key", value: apiKey)
 		]
@@ -54,7 +56,7 @@ class NetworkManager {
 				return
 			}
 			do {
-				let response = try JSONDecoder().decode(PopularMovieEntity.self, from: data)
+				let response = try JSONDecoder().decode(MovieEntity.self, from: data)
 				completionHandler(response.results)
 				return
 			} catch {
@@ -92,7 +94,7 @@ class NetworkManager {
 				return
 			}
 			do {
-				let response = try JSONDecoder().decode(TopRated.self, from: data)
+				let response = try JSONDecoder().decode(MovieEntity.self, from: data)
 				completionHandler(response.results)
 				return
 			} catch {
@@ -100,4 +102,16 @@ class NetworkManager {
 			}
 		}.resume()
 	}
+
+	func loadImage(from url: String, completionHandler: @escaping (UIImage) -> Void) {
+		if let urlString = URL(string: "https://image.tmdb.org/t/p/w500\(url)") {
+			DispatchQueue.global().async {
+				guard let data = try? Data(contentsOf: urlString), let image = UIImage(data: data) else {
+					return
+				}
+				completionHandler(image)
+			}
+		}
+	}
+
 }

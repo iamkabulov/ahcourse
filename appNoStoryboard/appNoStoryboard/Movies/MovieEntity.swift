@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Movie Entity
 struct MovieEntity: Codable {
-	let dates: Dates
+	let dates: Dates?
 	let page: Int
 	let results: [List]
 	let totalPages, totalResults: Int

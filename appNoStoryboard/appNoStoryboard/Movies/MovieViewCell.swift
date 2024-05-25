@@ -14,6 +14,7 @@ final class MovieViewCell: UITableViewCell {
 	static var identifier: String {
 		return String(describing: self)
 	}
+	private let networking = NetworkManager.shared
 	static let rowHeight: CGFloat = 460
 	private var path: String?
 
@@ -76,25 +77,15 @@ final class MovieViewCell: UITableViewCell {
 	func setData(movie: List) {
 		titleLabel.text = movie.title
 		setImage(img: nil)
-		loadImage(from: movie.posterPath)
-	}
-
-	func loadImage(from url: String) {
-		path = url
-		if let urlString = URL(string: "https://image.tmdb.org/t/p/w500\(url)") {
-			DispatchQueue.global().async {
-				guard let data = try? Data(contentsOf: urlString), let image = UIImage(data: data) else {
-					return
-				}
-				DispatchQueue.main.async {
-					if url == self.path {
-						self.setImage(img: image)
-					}
-				}
+		networking.loadImage(from: movie.posterPath) { img in
+			self.path = movie.posterPath
+			DispatchQueue.main.async {
+				self.setImage(img: img)
 			}
 		}
 	}
 
+	
 	func setImage(img: UIImage?) {
 		guard let img = img else {
 			contentView.addSubview(spinner)
@@ -103,15 +94,13 @@ final class MovieViewCell: UITableViewCell {
 			spinner.centerXAnchor.constraint(equalTo: stackView.centerXAnchor).isActive = true
 			spinner.heightAnchor.constraint(equalToConstant: Spacing.Size.height).isActive = true
 			spinner.centerYAnchor.constraint(equalTo: stackView.centerYAnchor).isActive = true
-//			movieImage.heightAnchor.constraint(lessThanOrEqualToConstant: Spacing.Size.height).isActive = false
-//			movieImage.widthAnchor.constraint(equalToConstant: Spacing.Size.width).isActive = false
 			contentView.layoutIfNeeded()
 			return
 		}
-			self.spinner.stopAnimating()
-			self.spinner.isHidden = true
-			self.movieImage.image = img
-			self.contentView.layoutIfNeeded()
+		self.spinner.stopAnimating()
+		self.spinner.isHidden = true
+		self.movieImage.image = img
+		self.contentView.layoutIfNeeded()
 	}
 }
 
