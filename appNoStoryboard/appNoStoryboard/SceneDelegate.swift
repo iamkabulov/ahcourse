@@ -21,7 +21,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 		window?.windowScene = windowScene
 		let mainViewController = ViewController()
 		let navigationController = UINavigationController(rootViewController: mainViewController)
-		window?.rootViewController = navigationController
+		let tabBarController = UITabBarController()
+		mainViewController.tabBarItem = UITabBarItem(title: "MovieDB", image: UIImage(systemName: "movieclapper"), selectedImage: nil)
+		let mDetails = FavouritesViewController()
+		mDetails.tabBarItem = UITabBarItem(title: "Other", image: UIImage(systemName: "heart"), selectedImage: nil)
+		tabBarController.tabBar.tintColor = .label
+		tabBarController.viewControllers = [navigationController, mDetails]
+		window?.rootViewController = tabBarController
 		window?.makeKeyAndVisible()
 	}
 
