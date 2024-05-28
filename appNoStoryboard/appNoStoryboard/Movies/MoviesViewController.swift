@@ -11,6 +11,7 @@ class ViewController: UIViewController {
 
 	private var themes = ["Popular", "Now Playing", "Upcoming", "Top Rated"]
 	var movieData: [List] = []
+	private var isFavList: [Int] = []
 	private let networking = NetworkManager.shared
 	var index = IndexPath(item: 0, section: 0)
 	private lazy var themeLabel: UILabel = {
@@ -58,6 +59,14 @@ class ViewController: UIViewController {
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		themeCollectionView.selectItem(at: index, animated: false, scrollPosition: [])
+
+		MoviesCoreData.shared.loadNotes { data in
+			self.isFavList = data.map { item in
+				item.id
+			}
+		}
+		print(isFavList)
+		self.tableView.reloadData()
 	}
 
 	override func viewDidDisappear(_ animated: Bool) {
@@ -74,6 +83,7 @@ class ViewController: UIViewController {
 		self.addView()
 		self.setupView()
 		self.themeCollectionView.allowsMultipleSelection = false
+
 	}
 
 
@@ -113,6 +123,16 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		guard let cell = self.tableView.dequeueReusableCell(withIdentifier: MovieViewCell.identifier, for: indexPath) as? MovieViewCell else { return UITableViewCell() }
 		cell.setData(movie: movieData[indexPath.row])
+		if isFavList.isEmpty {
+			cell.isFav(false)
+		} else {
+			let _ = isFavList.filter { id in
+				if movieData[indexPath.row].id == id {
+					cell.isFav(true)
+				}
+				return false
+			}
+		}
 		return cell
 	}
 

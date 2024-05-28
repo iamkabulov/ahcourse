@@ -14,8 +14,10 @@ final class MovieViewCell: UITableViewCell {
 	static var identifier: String {
 		return String(describing: self)
 	}
+	weak var favView: IFavouritesView?
 	private let networking = NetworkManager.shared
 	static let rowHeight: CGFloat = 460
+	private var id: Int?
 	private var path: String?
 
 	private enum Spacing {
@@ -44,6 +46,17 @@ final class MovieViewCell: UITableViewCell {
 		return image
 	}()
 
+	private lazy var addToFavouriteButton: UIButton = {
+		let image = UIButton(type: .custom)
+		image.setImage(UIImage(named: "ustar"), for: .normal)
+		image.translatesAutoresizingMaskIntoConstraints = false
+		image.widthAnchor.constraint(equalToConstant: 50).isActive = true
+		image.heightAnchor.constraint(equalToConstant: 48).isActive = true
+		image.contentMode = .scaleToFill
+		image.addTarget(self, action: #selector(addToFav), for: .touchUpInside)
+		return image
+	}()
+
 	private lazy var spinner: UIActivityIndicatorView = {
 		let spinner = UIActivityIndicatorView(style: .medium)
 		spinner.translatesAutoresizingMaskIntoConstraints = false
@@ -52,6 +65,7 @@ final class MovieViewCell: UITableViewCell {
 
 	private lazy var stackView: UIStackView = {
 		let stack = UIStackView(arrangedSubviews: [movieImage, titleLabel])
+		stack.addSubview(addToFavouriteButton)
 		stack.translatesAutoresizingMaskIntoConstraints = false
 		stack.axis = .vertical
 		stack.distribution = .fill
@@ -68,6 +82,7 @@ final class MovieViewCell: UITableViewCell {
 		super.prepareForReuse()
 		contentView.layoutIfNeeded()
 		movieImage.image = UIImage(named: "whiteBackground")
+		addToFavouriteButton.setImage(UIImage(named: "ustar"), for: .normal)
 	}
 
 	required init?(coder: NSCoder) {
@@ -76,16 +91,26 @@ final class MovieViewCell: UITableViewCell {
 
 	func setData(movie: List) {
 		titleLabel.text = movie.title
+		id = movie.id
+		path = movie.posterPath
 		setImage(img: nil)
 		networking.loadImage(from: movie.posterPath) { img in
-			self.path = movie.posterPath
-			DispatchQueue.main.async {
-				self.setImage(img: img)
+			if self.path == movie.posterPath {
+				DispatchQueue.main.async {
+					self.setImage(img: img)
+				}
 			}
 		}
 	}
 
-	
+	func isFav(_ value: Bool) {
+		if value {
+			addToFavouriteButton.setImage(UIImage(named: "fstar"), for: .normal)
+		} else {
+			addToFavouriteButton.setImage(UIImage(named: "ustar"), for: .normal)
+		}
+	}
+
 	func setImage(img: UIImage?) {
 		guard let img = img else {
 			contentView.addSubview(spinner)
@@ -114,7 +139,23 @@ private extension MovieViewCell {
 			stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
 			stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
 			movieImage.heightAnchor.constraint(lessThanOrEqualToConstant: Spacing.Size.height),
-			movieImage.widthAnchor.constraint(equalToConstant: Spacing.Size.width)
+			movieImage.widthAnchor.constraint(equalToConstant: Spacing.Size.width),
+			addToFavouriteButton.topAnchor.constraint(equalTo: movieImage.topAnchor, constant: 10),
+			addToFavouriteButton.trailingAnchor.constraint(equalTo: movieImage.trailingAnchor, constant: -10)
 		])
+	}
+
+	@objc func addToFav(_ sender: UIButton) {
+		guard let title = titleLabel.text, let id = self.id, let path = self.path else { return }
+		if sender.image(for: .normal) == UIImage(named: "fstar") {
+			MoviesCoreData.shared.deleteNote(id: id)
+			addToFavouriteButton.setImage(UIImage(named: "ustar"), for: .normal)
+		} else if sender.image(for: .normal) == UIImage(named: "ustar") {
+			let note = FavouriteMovies(id: id, title: title, posterPath: path)
+			MoviesCoreData.shared.saveNote(note)
+			addToFavouriteButton.setImage(UIImage(named: "fstar"), for: .normal)
+		}
+		guard let favView = favView else { return }
+		favView.buttonTapped?()
 	}
 }

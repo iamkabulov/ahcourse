@@ -6,9 +6,14 @@
 //
 
 import UIKit
+protocol IFavouritesView: AnyObject
+{
+	var buttonTapped: (() -> Void)? { get set }
+}
 
 final class FavouritesViewController: UIViewController {
-	
+	private var favMovies: [FavouriteMovies] = []
+	internal var buttonTapped: (() -> Void)?
 	lazy var titleLabel: UILabel = {
 		let label = UILabel()
 		label.translatesAutoresizingMaskIntoConstraints = false
@@ -30,6 +35,20 @@ final class FavouritesViewController: UIViewController {
 		return view
 	}()
 
+	override func viewWillAppear(_ animated: Bool) {
+		super.viewWillAppear(animated)
+		MoviesCoreData.shared.loadNotes { data in
+			self.favMovies = data
+			self.tableView.reloadData()
+		}
+		buttonTapped = {
+			MoviesCoreData.shared.loadNotes { data in
+				self.favMovies = data
+				self.tableView.reloadData()
+			}
+		}
+	}
+
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		view.backgroundColor = .systemBackground
@@ -38,7 +57,7 @@ final class FavouritesViewController: UIViewController {
 }
 
 //MARK: - TableView
-extension FavouritesViewController {
+extension FavouritesViewController: IFavouritesView {
 
 	func setupView() {
 		self.view.addSubview(self.titleLabel)
@@ -56,12 +75,27 @@ extension FavouritesViewController {
 
 extension FavouritesViewController: UITableViewDelegate, UITableViewDataSource {
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		1
+		favMovies.count
 	}
 
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		guard let cell = self.tableView.dequeueReusableCell(withIdentifier: MovieViewCell.identifier, for: indexPath) as? MovieViewCell else { return UITableViewCell() }
-		cell.setData(movie: List(adult: true, backdropPath: nil, genreIDS: [], id: 823464, originalLanguage: "", originalTitle: "NURS", overview: "AK", popularity: 2.0, posterPath: "", releaseDate: "", title: "", video: true, voteAverage: 2.9, voteCount: 1))
+		cell.setData(movie: List(adult: true,
+								 backdropPath: nil,
+								 genreIDS: [],
+								 id: Int(favMovies[indexPath.row].id),
+								 originalLanguage: "",
+								 originalTitle: "",
+								 overview: "",
+								 popularity: 2.0, 
+								 posterPath: favMovies[indexPath.row].posterPath,
+								 releaseDate: "",
+								 title: favMovies[indexPath.row].title,
+								 video: false,
+								 voteAverage: 2.9,
+								 voteCount: 1))
+		cell.isFav(true)
+		cell.favView = self
 		return cell
 	}
 
