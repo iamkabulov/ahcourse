@@ -24,6 +24,35 @@ final class FavouritesViewController: UIViewController {
 		return label
 	}()
 
+	lazy var noFavLabel: UILabel = {
+		let label = UILabel()
+		label.translatesAutoresizingMaskIntoConstraints = false
+		label.textAlignment = .center
+		label.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+		label.text = "No Favourites"
+
+		return label
+	}()
+
+	private lazy var infoLabel: UILabel = {
+		let label = UILabel()
+		label.translatesAutoresizingMaskIntoConstraints = false
+		label.textAlignment = .center
+		label.font = UIFont.systemFont(ofSize: 14, weight: .light)
+		label.textColor = .gray
+		label.text = "You haven't liked any items yet."
+		return label
+	}()
+
+	private lazy var noFavouriteImage: UIImageView = {
+		let image = UIImageView()
+		image.translatesAutoresizingMaskIntoConstraints = false
+		image.image = UIImage(named: "nofav")
+		image.heightAnchor.constraint(equalToConstant: 151).isActive = true
+		image.widthAnchor.constraint(equalToConstant: 149).isActive = true
+		return image
+	}()
+
 	lazy var tableView: UITableView = {
 		let view = UITableView()
 		view.translatesAutoresizingMaskIntoConstraints = false
@@ -37,16 +66,18 @@ final class FavouritesViewController: UIViewController {
 
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
-		MoviesCoreData.shared.loadNotes { data in
+		MoviesCoreData.shared.loadNotes { [self] data in
 			self.favMovies = data
-			self.tableView.reloadData()
+			isEmptyViewSetup()
 		}
 		buttonTapped = {
-			MoviesCoreData.shared.loadNotes { data in
+			MoviesCoreData.shared.loadNotes { [self] data in
 				self.favMovies = data
-				self.tableView.reloadData()
+				isEmptyViewSetup()
 			}
 		}
+
+
 	}
 
 	override func viewDidLoad() {
@@ -61,6 +92,9 @@ extension FavouritesViewController: IFavouritesView {
 
 	func setupView() {
 		self.view.addSubview(self.titleLabel)
+		self.view.addSubview(self.noFavouriteImage)
+		self.view.addSubview(self.noFavLabel)
+		self.view.addSubview(self.infoLabel)
 		self.view.addSubview(self.tableView)
 		NSLayoutConstraint.activate([
 			titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -69,7 +103,29 @@ extension FavouritesViewController: IFavouritesView {
 			tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
 			tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
 			tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+			noFavouriteImage.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+			noFavouriteImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+			noFavLabel.topAnchor.constraint(equalTo: noFavouriteImage.bottomAnchor, constant: 10),
+			noFavLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+			infoLabel.topAnchor.constraint(equalTo: noFavLabel.bottomAnchor, constant: 10),
+			infoLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
 		])
+	}
+
+	func isEmptyViewSetup() {
+		self.tableView.reloadData()
+		if favMovies.isEmpty {
+			tableView.isHidden = true
+			noFavouriteImage.isHidden = false
+			noFavLabel.isHidden = false
+			infoLabel.isHidden = false
+		} else {
+			noFavouriteImage.isHidden = true
+			noFavLabel.isHidden = true
+			infoLabel.isHidden = true
+			tableView.isHidden = false
+
+		}
 	}
 }
 
