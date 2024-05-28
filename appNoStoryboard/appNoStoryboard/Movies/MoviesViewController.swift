@@ -7,7 +7,7 @@
 //9863b0919782bd200569d84cf236247b
 import UIKit
 
-class ViewController: UIViewController {
+class MoviesViewController: UIViewController {
 
 	private var themes = ["Popular", "Now Playing", "Upcoming", "Top Rated"]
 	var movieData: [List] = []
@@ -90,7 +90,7 @@ class ViewController: UIViewController {
 }
 
 //MARK: - TableView
-extension ViewController {
+extension MoviesViewController {
 	func addView() {
 //		self.title = "TABLEVIEW"
 
@@ -115,7 +115,7 @@ extension ViewController {
 	}
 }
 
-extension ViewController: UITableViewDelegate, UITableViewDataSource {
+extension MoviesViewController: UITableViewDelegate, UITableViewDataSource {
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 		movieData.count
 	}
@@ -143,7 +143,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
 }
 
 //MARK: - API
-extension ViewController {
+extension MoviesViewController {
 
 	func loadMovies(_ path: String) {
 		switch path {
@@ -183,7 +183,7 @@ extension ViewController {
 
 
 //MARK: - CollectionView
-extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+extension MoviesViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 		themes.count
 	}

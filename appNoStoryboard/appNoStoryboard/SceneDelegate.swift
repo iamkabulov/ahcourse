@@ -19,14 +19,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 		guard let windowScene = (scene as? UIWindowScene) else { return }
 		window = UIWindow(windowScene: windowScene)
 		window?.windowScene = windowScene
-		let mainViewController = ViewController()
-		let navigationController = UINavigationController(rootViewController: mainViewController)
-		let tabBarController = UITabBarController()
-		mainViewController.tabBarItem = UITabBarItem(title: "MovieDB", image: UIImage(systemName: "movieclapper"), selectedImage: nil)
-		let mDetails = FavouritesViewController()
-		mDetails.tabBarItem = UITabBarItem(title: "Other", image: UIImage(systemName: "heart"), selectedImage: nil)
-		tabBarController.tabBar.tintColor = .label
-		tabBarController.viewControllers = [navigationController, mDetails]
+		let tabBarController = MovieBarController()
 		window?.rootViewController = tabBarController
 		window?.makeKeyAndVisible()
 	}

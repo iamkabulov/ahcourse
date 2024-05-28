@@ -94,10 +94,15 @@ final class MovieViewCell: UITableViewCell {
 		id = movie.id
 		path = movie.posterPath
 		setImage(img: nil)
-		networking.loadImage(from: movie.posterPath) { img in
-			if self.path == movie.posterPath {
-				DispatchQueue.main.async {
-					self.setImage(img: img)
+		if let cachedImage = ImageCache.shared.object(forKey: movie.posterPath as NSString) {
+			setImage(img: cachedImage)
+		} else {
+			networking.loadImage(from: movie.posterPath) { img in
+				if self.path == movie.posterPath {
+					DispatchQueue.main.async {
+						ImageCache.shared.setObject(img, forKey: movie.posterPath as NSString)
+						self.setImage(img: img)
+					}
 				}
 			}
 		}
