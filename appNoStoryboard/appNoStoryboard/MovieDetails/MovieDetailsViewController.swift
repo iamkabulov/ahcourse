@@ -13,6 +13,8 @@ class MovieDetailsViewController: UIViewController {
 	private var id: Int
 	private var movieData: MovieDetailEntity?
 	private var castData: CastEntity?
+	private var externalLinks: ExternalIdsEntity?
+	private var youtubeId: YoutubeIdEntity?
 	private let session = URLSession(configuration: .default)
 	lazy private var urlComponent: URLComponents = {
 		var component = URLComponents()
@@ -216,7 +218,7 @@ class MovieDetailsViewController: UIViewController {
 	private lazy var hStackLink: UIStackView = {
 		let stack = UIStackView()
 		stack.addSubview(imdb)
-		stack.addSubview(instagram)
+		stack.addSubview(youtube)
 		stack.addSubview(facebook)
 		stack.translatesAutoresizingMaskIntoConstraints = false
 		stack.axis = .horizontal
@@ -234,33 +236,36 @@ class MovieDetailsViewController: UIViewController {
 		return label
 	}()
 
-	private lazy var imdb: UIImageView = {
-		let image = UIImageView()
+	private lazy var imdb: UIButton = {
+		let image = UIButton(type: .custom)
+		image.setImage(UIImage(named: "imdb"), for: .normal)
 		image.translatesAutoresizingMaskIntoConstraints = false
-		image.image = UIImage(named: "imdb")
-		image.contentMode = .scaleAspectFit
-		image.heightAnchor.constraint(equalToConstant: 40).isActive = true
 		image.widthAnchor.constraint(equalToConstant: 60).isActive = true
+		image.heightAnchor.constraint(equalToConstant: 40).isActive = true
+		image.contentMode = .scaleToFill
+		image.addTarget(self, action: #selector(buttonHandler), for: .touchUpInside)
 		return image
 	}()
 
-	private lazy var instagram: UIImageView = {
-		let image = UIImageView()
+	private lazy var youtube: UIButton = {
+		let image = UIButton(type: .custom)
+		image.setImage(UIImage(named: "youtube"), for: .normal)
 		image.translatesAutoresizingMaskIntoConstraints = false
-		image.image = UIImage(named: "youtube")
-		image.contentMode = .scaleAspectFit
-		image.heightAnchor.constraint(equalToConstant: 40).isActive = true
 		image.widthAnchor.constraint(equalToConstant: 60).isActive = true
+		image.heightAnchor.constraint(equalToConstant: 40).isActive = true
+		image.contentMode = .scaleToFill
+		image.addTarget(self, action: #selector(buttonHandler), for: .touchUpInside)
 		return image
 	}()
 
-	private lazy var facebook: UIImageView = {
-		let image = UIImageView()
+	private lazy var facebook: UIButton = {
+		let image = UIButton(type: .custom)
+		image.setImage(UIImage(named: "meta"), for: .normal)
 		image.translatesAutoresizingMaskIntoConstraints = false
-		image.image = UIImage(named: "meta")
-		image.contentMode = .scaleAspectFit
-		image.heightAnchor.constraint(equalToConstant: 40).isActive = true
 		image.widthAnchor.constraint(equalToConstant: 60).isActive = true
+		image.heightAnchor.constraint(equalToConstant: 40).isActive = true
+		image.contentMode = .scaleToFill
+		image.addTarget(self, action: #selector(buttonHandler), for: .touchUpInside)
 		return image
 	}()
 
@@ -347,10 +352,31 @@ class MovieDetailsViewController: UIViewController {
 		genreCollectionView.reloadData()
 		getCastInfo(id)
 		castCollectionView.reloadData()
+		loadExternalIds(id)
+		loadYoutubeId(id)
 	}
 }
 
 extension MovieDetailsViewController {
+	@objc func buttonHandler(_ sender: UIButton) {
+		switch sender {
+		case imdb:
+			guard let id = externalLinks?.imdbID else { return }
+			print(id)
+			UIApplication.shared.open(URL(string: "https://www.imdb.com/title/\(id)")!)
+		case facebook:
+			guard let id = externalLinks?.facebookID else { return }
+			print(id)
+			UIApplication.shared.open(URL(string: "https://www.facebook.com/\(id)")!)
+		case youtube:
+			guard let id = youtubeId?.results[0].key else { return }
+			print(id)
+			UIApplication.shared.open(URL(string: "https://www.youtube.com/watch?v=\(id)")!)
+		default:
+			print("other")
+		}
+	}
+
 	func setupView() {
 		view.addSubview(scrollView)
 		scrollView.addSubview(stackView)
@@ -377,8 +403,8 @@ extension MovieDetailsViewController {
 			rateLabel.trailingAnchor.constraint(equalTo: vStackRateAndViews.trailingAnchor, constant: -10),
 			viewsLabel.trailingAnchor.constraint(equalTo: vStackRateAndViews.trailingAnchor, constant: -10),
 			imdb.leadingAnchor.constraint(equalTo: hStackLink.leadingAnchor, constant: 96),
-			instagram.leadingAnchor.constraint(equalTo: imdb.trailingAnchor, constant: 10),
-			facebook.leadingAnchor.constraint(equalTo: instagram.trailingAnchor, constant: 10),
+			youtube.leadingAnchor.constraint(equalTo: imdb.trailingAnchor, constant: 10),
+			facebook.leadingAnchor.constraint(equalTo: youtube.trailingAnchor, constant: 10),
 			addWatchList.leadingAnchor.constraint(equalTo: hStackButton.leadingAnchor, constant: 80),
 			addWatchList.trailingAnchor.constraint(equalTo: hStackButton.trailingAnchor, constant: -80),
 			addWatchList.bottomAnchor.constraint(equalTo: stackView.bottomAnchor, constant: -10)
@@ -449,6 +475,48 @@ extension MovieDetailsViewController {
 				}
 			}
 		}
+	}
+
+	func loadExternalIds(_ id: Int) {
+		self.urlComponent.path = "/3/movie/\(id)/external_ids"
+
+		guard let requestUrl = self.urlComponent.url else { return }
+
+		session.dataTask(with: requestUrl) { data, response, error in
+			DispatchQueue.main.async(flags: .barrier) { [self] in
+				guard let data = data, error == nil else {
+					return
+				}
+				do {
+					let response = try JSONDecoder().decode(ExternalIdsEntity.self, from: data)
+					self.externalLinks = response
+					return
+				} catch {
+					return print(error)
+				}
+			}
+		}.resume()
+	}
+
+	func loadYoutubeId(_ id: Int) {
+		self.urlComponent.path = "/3/movie/\(id)/videos"
+
+		guard let requestUrl = self.urlComponent.url else { return }
+
+		session.dataTask(with: requestUrl) { data, response, error in
+			DispatchQueue.main.async(flags: .barrier) { [self] in
+				guard let data = data, error == nil else {
+					return
+				}
+				do {
+					let response = try JSONDecoder().decode(YoutubeIdEntity.self, from: data)
+					self.youtubeId = response
+					return
+				} catch {
+					return print(error)
+				}
+			}
+		}.resume()
 	}
 
 	func setData(_ movieDetail: MovieDetailEntity) {

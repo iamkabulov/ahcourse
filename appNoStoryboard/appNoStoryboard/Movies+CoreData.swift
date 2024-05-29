@@ -42,10 +42,12 @@ class MoviesCoreData
 //MARK: - INotesCoreData
 extension MoviesCoreData {
 	func saveContext() {
-		do {
-			try context.save()
-		} catch {
-			fatalError("Unresolved saving error \(error)")
+		DispatchQueue.main.async(flags: .barrier) {
+			do {
+				try self.context.save()
+			} catch {
+				fatalError("Unresolved saving error \(error)")
+			}
 		}
 	}
 
