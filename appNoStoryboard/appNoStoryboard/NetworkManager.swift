@@ -104,14 +104,92 @@ class NetworkManager {
 	}
 
 	func loadImage(from url: String, completionHandler: @escaping (UIImage) -> Void) {
-		if let urlString = URL(string: "https://image.tmdb.org/t/p/w500\(url)") {
+		if let cachedImage = ImageCache.shared.object(forKey: url as NSString) {
+			completionHandler(cachedImage)
+		} else if let urlString = URL(string: "https://image.tmdb.org/t/p/w500\(url)") {
 			DispatchQueue.global().async {
 				guard let data = try? Data(contentsOf: urlString), let image = UIImage(data: data) else {
 					return
 				}
+				ImageCache.shared.setObject(image, forKey: url as NSString)
 				completionHandler(image)
 			}
 		}
 	}
 
+	func getDetailInfo(id: Int, completionHandler: @escaping (MovieDetailEntity) -> Void) {
+		self.urlComponent.path = "/3/movie/\(id)"
+
+		guard let requestUrl = self.urlComponent.url else { return }
+
+		session.dataTask(with: requestUrl) { data, response, error in
+			guard let data = data, error == nil else {
+				return
+			}
+			do {
+				let response = try JSONDecoder().decode(MovieDetailEntity.self, from: data)
+				completionHandler(response)
+				return
+			} catch {
+				return print(error)
+			}
+		}.resume()
+	}
+
+	func getCastInfo(_ id: Int, completionHandler: @escaping (CastEntity) -> Void) {
+		self.urlComponent.path = "/3/movie/\(id)/credits"
+
+		guard let requestUrl = self.urlComponent.url else { return }
+
+		session.dataTask(with: requestUrl) { data, response, error in
+			guard let data = data, error == nil else {
+				return
+			}
+			do {
+				let response = try JSONDecoder().decode(CastEntity.self, from: data)
+				completionHandler(response)
+				return
+			} catch {
+				return print(error)
+			}
+		}.resume()
+	}
+
+	func loadExternalIds(_ id: Int, completionHandler: @escaping (ExternalIdsEntity) -> Void) {
+		self.urlComponent.path = "/3/movie/\(id)/external_ids"
+
+		guard let requestUrl = self.urlComponent.url else { return }
+
+		session.dataTask(with: requestUrl) { data, response, error in
+			guard let data = data, error == nil else {
+				return
+			}
+			do {
+				let response = try JSONDecoder().decode(ExternalIdsEntity.self, from: data)
+				completionHandler(response)
+				return
+			} catch {
+				return print(error)
+			}
+		}.resume()
+	}
+
+	func loadYoutubeId(_ id: Int, completionHandler: @escaping (YoutubeIdEntity) -> Void) {
+		self.urlComponent.path = "/3/movie/\(id)/videos"
+
+		guard let requestUrl = self.urlComponent.url else { return }
+
+		session.dataTask(with: requestUrl) { data, response, error in
+			guard let data = data, error == nil else {
+				return
+			}
+			do {
+				let response = try JSONDecoder().decode(YoutubeIdEntity.self, from: data)
+				completionHandler(response)
+				return
+			} catch {
+				return print(error)
+			}
+		}.resume()
+	}
 }

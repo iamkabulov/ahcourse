@@ -123,14 +123,25 @@ extension WatchListViewController: UITableViewDelegate, UITableViewDataSource {
 
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		guard let cell = self.tableView.dequeueReusableCell(withIdentifier: MovieViewCell.identifier, for: indexPath) as? MovieViewCell else { return UITableViewCell() }
-		cell.setData(by: watchList[indexPath.row])
-		cell.isFav(true)
+		NetworkManager.shared.getDetailInfo(id: watchList[indexPath.row]) { data in
+			DispatchQueue.main.async {
+				cell.setData(title: data.title ?? "")
+				cell.setImage(img: nil)
+				NetworkManager.shared.loadImage(from: data.posterPath ?? "") { image in
+					DispatchQueue.main.async {
+						cell.setImage(img: image)
+					}
+				}
+			}
+		}
+
+		cell.hideFavButton()
 		return cell
 	}
 
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//		let detailView = MovieDetailsViewController(id: movieData[indexPath.row].id)
-//		self.navigationController?.pushViewController(detailView, animated: true)
+		let detailView = MovieDetailsViewController(id: watchList[indexPath.row])
+		self.navigationController?.pushViewController(detailView, animated: true)
 	}
 }
 
