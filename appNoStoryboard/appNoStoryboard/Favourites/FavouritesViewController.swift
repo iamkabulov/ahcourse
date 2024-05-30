@@ -12,8 +12,11 @@ protocol IFavouritesView: AnyObject
 }
 
 final class FavouritesViewController: UIViewController {
+	//MARK: - properties
 	private var favMovies: [FavouriteMovies] = []
 	internal var buttonTapped: (() -> Void)?
+
+	//MARK: - Labels
 	lazy var titleLabel: UILabel = {
 		let label = UILabel()
 		label.translatesAutoresizingMaskIntoConstraints = false
@@ -44,6 +47,7 @@ final class FavouritesViewController: UIViewController {
 		return label
 	}()
 
+	//MARK: - ImageView
 	private lazy var noFavouriteImage: UIImageView = {
 		let image = UIImageView()
 		image.translatesAutoresizingMaskIntoConstraints = false
@@ -53,6 +57,7 @@ final class FavouritesViewController: UIViewController {
 		return image
 	}()
 
+	//MARK: - TableView
 	lazy var tableView: UITableView = {
 		let view = UITableView()
 		view.translatesAutoresizingMaskIntoConstraints = false
@@ -64,8 +69,10 @@ final class FavouritesViewController: UIViewController {
 		return view
 	}()
 
+	//MARK: - LifeCycle
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
+		navigationController?.isNavigationBarHidden = true
 		MoviesCoreData.shared.loadNotes { [self] data in
 			self.favMovies = data
 			isEmptyViewSetup()
@@ -76,8 +83,6 @@ final class FavouritesViewController: UIViewController {
 				isEmptyViewSetup()
 			}
 		}
-
-
 	}
 
 	override func viewDidLoad() {
@@ -89,7 +94,7 @@ final class FavouritesViewController: UIViewController {
 
 //MARK: - TableView
 extension FavouritesViewController: IFavouritesView {
-
+	//MARK: - View Setup
 	func setupView() {
 		self.view.addSubview(self.titleLabel)
 		self.view.addSubview(self.noFavouriteImage)
@@ -128,7 +133,7 @@ extension FavouritesViewController: IFavouritesView {
 		}
 	}
 }
-
+//MARK: - TableViewDelegate
 extension FavouritesViewController: UITableViewDelegate, UITableViewDataSource {
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 		favMovies.count
@@ -156,7 +161,7 @@ extension FavouritesViewController: UITableViewDelegate, UITableViewDataSource {
 	}
 
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//		let detailView = MovieDetailsViewController(id: movieData[indexPath.row].id)
-//		self.navigationController?.pushViewController(detailView, animated: true)
+		let detailView = MovieDetailsViewController(id: favMovies[indexPath.row].id)
+		self.navigationController?.pushViewController(detailView, animated: true)
 	}
 }

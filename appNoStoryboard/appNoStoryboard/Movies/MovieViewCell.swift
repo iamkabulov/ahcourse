@@ -9,8 +9,7 @@ import UIKit
 
 
 final class MovieViewCell: UITableViewCell {
-
-	//	static let identifier = "Id"
+	//MARK: - Properties
 	static var identifier: String {
 		return String(describing: self)
 	}
@@ -73,6 +72,7 @@ final class MovieViewCell: UITableViewCell {
 		return stack
 	}()
 
+	//MARK: - ViewLifeCycle
 	override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
 		super.init(style: style, reuseIdentifier: reuseIdentifier)
 		setupLayout()
@@ -89,6 +89,7 @@ final class MovieViewCell: UITableViewCell {
 		fatalError("init(coder:) has not been implemented")
 	}
 
+	//MARK: - Methods
 	func setData(movie: List) {
 		titleLabel.text = movie.title
 		id = movie.id

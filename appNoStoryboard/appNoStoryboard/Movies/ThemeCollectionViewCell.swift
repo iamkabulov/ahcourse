@@ -8,6 +8,7 @@
 import UIKit
 
 class CollectionViewCell: UICollectionViewCell {
+	//MARK: - Properties
 	static var identifier: String {
 		return String(describing: self)
 	}
@@ -19,7 +20,8 @@ class CollectionViewCell: UICollectionViewCell {
 		label.textAlignment = .center
 		return label
 	}()
-
+	
+	//MARK: - LifeCycle
 	override init(frame: CGRect) {
 		super.init(frame: frame)
 		setupView()
@@ -32,7 +34,7 @@ class CollectionViewCell: UICollectionViewCell {
 		fatalError("init(coder:) has not been implemented")
 	}
 }
-
+//MARK: - ViewSetup
 extension CollectionViewCell {
 	func setupView() {
 		contentView.addSubview(nameOfButton)

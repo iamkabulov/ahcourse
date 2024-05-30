@@ -10,6 +10,7 @@ import UIKit
 final class WatchListViewController: UIViewController {
 	private var watchList: [Int] = []
 
+	//MARK: - Labels
 	lazy var titleLabel: UILabel = {
 		let label = UILabel()
 		label.translatesAutoresizingMaskIntoConstraints = false
@@ -40,6 +41,7 @@ final class WatchListViewController: UIViewController {
 		return label
 	}()
 
+	//MARK: - ImageView
 	private lazy var noFavouriteImage: UIImageView = {
 		let image = UIImageView()
 		image.translatesAutoresizingMaskIntoConstraints = false
@@ -49,6 +51,7 @@ final class WatchListViewController: UIViewController {
 		return image
 	}()
 
+	//MARK: - TableView
 	lazy var tableView: UITableView = {
 		let view = UITableView()
 		view.translatesAutoresizingMaskIntoConstraints = false
@@ -60,8 +63,10 @@ final class WatchListViewController: UIViewController {
 		return view
 	}()
 
+	//MARK: - LifeCycle
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
+		navigationController?.isNavigationBarHidden = true
 		guard let ids = WatchListUserDefaults.shared.getMovies() else { return }
 		watchList = ids
 		isEmptyViewSetup()
@@ -76,7 +81,7 @@ final class WatchListViewController: UIViewController {
 
 //MARK: - TableView
 extension WatchListViewController {
-
+	//MARK: - View Setup
 	func setupView() {
 		self.view.addSubview(self.titleLabel)
 		self.view.addSubview(self.noFavouriteImage)
@@ -116,6 +121,7 @@ extension WatchListViewController {
 	}
 }
 
+//MARK: - TableViewDelegate
 extension WatchListViewController: UITableViewDelegate, UITableViewDataSource {
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 		watchList.count

@@ -101,9 +101,3 @@ extension MoviesCoreData {
 		return nil
 	}
 }
-
-struct FavouriteMovies {
-	let id: Int
-	let title: String
-	let posterPath: String
-}

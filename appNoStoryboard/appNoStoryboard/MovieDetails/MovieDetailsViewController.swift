@@ -9,23 +9,14 @@ import UIKit
 import SnapKit
 
 class MovieDetailsViewController: UIViewController {
-	
+	//MARK: - Properties
 	private var id: Int
 	private var movieData: MovieDetailEntity?
 	private var castData: CastEntity?
 	private var externalLinks: ExternalIdsEntity?
 	private var youtubeId: YoutubeIdEntity?
-	private let session = URLSession(configuration: .default)
-	lazy private var urlComponent: URLComponents = {
-		var component = URLComponents()
-		component.scheme = "https"
-		component.host = "api.themoviedb.org"
-		component.queryItems = [
-			URLQueryItem(name: "api_key", value: "9863b0919782bd200569d84cf236247b")
-		]
-		return component
-	}()
-
+	
+	//MARK: - ScrollViewComponent
 	private lazy var scrollView: UIScrollView = {
 		let scroll = UIScrollView()
 		scroll.translatesAutoresizingMaskIntoConstraints = false
@@ -34,6 +25,7 @@ class MovieDetailsViewController: UIViewController {
 		return scroll
 	}()
 	
+	//MARK: - StackViewComponent
 	private lazy var stackView: UIStackView = {
 		let stack = UIStackView(arrangedSubviews: [moviePoster, titleLabel, horizontalStackView, vStackOverview, castLabel, castCollectionView, linkLabel, hStackLink, hStackButton])
 		stack.translatesAutoresizingMaskIntoConstraints = false
@@ -42,6 +34,26 @@ class MovieDetailsViewController: UIViewController {
 		return stack
 	}()
 
+	//MARK: - PosterViewComponent
+	private lazy var moviePoster: UIImageView = {
+		let image = UIImageView()
+		image.translatesAutoresizingMaskIntoConstraints = false
+		image.image = UIImage(named: "whiteBackground")
+		image.contentMode = .scaleAspectFit
+		image.heightAnchor.constraint(equalToConstant: 424).isActive = true
+		return image
+	}()
+
+	private lazy var titleLabel: UILabel = {
+		let label = UILabel()
+		label.translatesAutoresizingMaskIntoConstraints = false
+		label.textAlignment = .center
+		label.font = UIFont.systemFont(ofSize: 48, weight: .bold)
+		label.numberOfLines = 0
+		return label
+	}()
+
+	//MARK: - Release and Rate View Component
 	private lazy var horizontalStackView: UIStackView = {
 		let stack = UIStackView(arrangedSubviews: [vStackDateAndGenre, vStackRateAndViews])
 		stack.translatesAutoresizingMaskIntoConstraints = false
@@ -70,6 +82,14 @@ class MovieDetailsViewController: UIViewController {
 		return stack
 	}()
 
+	private lazy var releaseDate: UILabel = {
+		let label = UILabel()
+		label.translatesAutoresizingMaskIntoConstraints = false
+		label.font = UIFont.systemFont(ofSize: 20, weight: .light)
+		label.text = "Release date"
+		return label
+	}()
+
 	lazy var genreCollectionView: UICollectionView = {
 		let layout = UICollectionViewFlowLayout()
 		layout.scrollDirection = .horizontal
@@ -87,14 +107,14 @@ class MovieDetailsViewController: UIViewController {
 		return view
 	}()
 
-	private lazy var moviePoster: UIImageView = {
-		let image = UIImageView()
-		image.translatesAutoresizingMaskIntoConstraints = false
-		image.image = UIImage(named: "whiteBackground")
-		image.contentMode = .scaleAspectFit
-		image.heightAnchor.constraint(equalToConstant: 424).isActive = true
-//		image.widthAnchor.constraint(equalToConstant: 309).isActive = true
-		return image
+	private lazy var viewsLabel: UILabel = {
+		let label = UILabel()
+		label.translatesAutoresizingMaskIntoConstraints = false
+		label.textAlignment = .center
+		label.font = UIFont.systemFont(ofSize: 14, weight: .light)
+		label.textColor = .gray
+		label.text = movieData?.imdbID
+		return label
 	}()
 
 	private lazy var hStackRateImage: UIStackView = {
@@ -163,6 +183,7 @@ class MovieDetailsViewController: UIViewController {
 		return label
 	}()
 
+	//MARK: - OverViewComponent
 	private lazy var vStackOverview: UIStackView = {
 		let stack = UIStackView(arrangedSubviews: [
 													UIView(frame: CGRect(x: 0, y: 0, width: 5, height: 10)),
@@ -187,6 +208,20 @@ class MovieDetailsViewController: UIViewController {
 		return label
 	}()
 
+	private lazy var descriptionView: UITextView = {
+		let label = UITextView()
+		label.translatesAutoresizingMaskIntoConstraints = false
+		label.isUserInteractionEnabled = false
+		label.sizeToFit()
+		label.isScrollEnabled = false
+		label.font = UIFont.systemFont(ofSize: 14, weight: .regular)
+		label.backgroundColor = .systemGray4
+		label.text = ""
+//		label.heightAnchor.constraint(equalToConstant: 250).isActive = true
+		return label
+	}()
+
+	//MARK: - CastViewComponent
 	private lazy var castLabel: UILabel = {
 		let label = UILabel()
 		label.translatesAutoresizingMaskIntoConstraints = false
@@ -214,7 +249,8 @@ class MovieDetailsViewController: UIViewController {
 		view.heightAnchor.constraint(equalToConstant: 60).isActive = true
 		return view
 	}()
-
+	
+	//MARK: - LinkViewComponent
 	private lazy var hStackLink: UIStackView = {
 		let stack = UIStackView()
 		stack.addSubview(imdb)
@@ -268,47 +304,7 @@ class MovieDetailsViewController: UIViewController {
 		image.addTarget(self, action: #selector(buttonHandler), for: .touchUpInside)
 		return image
 	}()
-
-	private lazy var descriptionView: UITextView = {
-		let label = UITextView()
-		label.translatesAutoresizingMaskIntoConstraints = false
-		label.isUserInteractionEnabled = false
-		label.sizeToFit()
-		label.isScrollEnabled = false
-		label.font = UIFont.systemFont(ofSize: 14, weight: .regular)
-		label.backgroundColor = .systemGray4
-		label.text = ""
-//		label.heightAnchor.constraint(equalToConstant: 250).isActive = true
-		return label
-	}()
-
-	private lazy var viewsLabel: UILabel = {
-		let label = UILabel()
-		label.translatesAutoresizingMaskIntoConstraints = false
-		label.textAlignment = .center
-		label.font = UIFont.systemFont(ofSize: 14, weight: .light)
-		label.textColor = .gray
-		label.text = movieData?.imdbID
-		return label
-	}()
-
-	private lazy var titleLabel: UILabel = {
-		let label = UILabel()
-		label.translatesAutoresizingMaskIntoConstraints = false
-		label.textAlignment = .center
-		label.font = UIFont.systemFont(ofSize: 48, weight: .bold)
-		label.numberOfLines = 0
-		return label
-	}()
-
-	private lazy var releaseDate: UILabel = {
-		let label = UILabel()
-		label.translatesAutoresizingMaskIntoConstraints = false
-		label.font = UIFont.systemFont(ofSize: 20, weight: .light)
-		label.text = "Release date"
-		return label
-	}()
-
+	//MARK: - ButtonComponent
 	private lazy var hStackButton: UIStackView = {
 		let stack = UIStackView()
 		stack.addSubview(addWatchList)
@@ -328,6 +324,7 @@ class MovieDetailsViewController: UIViewController {
 		return button
 	}()
 
+	//MARK: - ViewLifeCycle
 	init(id: Int) {
 		self.id = id
 		print(id)
@@ -344,6 +341,7 @@ class MovieDetailsViewController: UIViewController {
 		self.title = "Movie"
 		self.navigationController?.navigationBar.topItem?.title = ""
 		self.navigationController?.navigationBar.tintColor = .black
+		self.navigationController?.isNavigationBarHidden = false
 		setupView()
 		getDetailInfo(id: id)
 		genreCollectionView.reloadData()
@@ -356,6 +354,7 @@ class MovieDetailsViewController: UIViewController {
 }
 
 extension MovieDetailsViewController {
+	//MARK: - Methods
 	@objc func buttonHandler(_ sender: UIButton) {
 		switch sender {
 		case imdb:
@@ -367,9 +366,9 @@ extension MovieDetailsViewController {
 			print(id)
 			UIApplication.shared.open(URL(string: "https://www.facebook.com/\(id)")!)
 		case youtube:
-			guard let id = youtubeId?.results[0].key else { return }
+			guard let id = youtubeId?.results, !id.isEmpty else { return }
 			print(id)
-			UIApplication.shared.open(URL(string: "https://www.youtube.com/watch?v=\(id)")!)
+			UIApplication.shared.open(URL(string: "https://www.youtube.com/watch?v=\(id[0].key)")!)
 		default:
 			print("other")
 		}
@@ -431,7 +430,36 @@ extension MovieDetailsViewController {
 		])
 	}
 
+	func setData(_ movieDetail: MovieDetailEntity) {
+		let rate = movieDetail.voteAverage ?? 0
+		let views = movieDetail.voteCount ?? 0
 
+		titleLabel.text = movieDetail.title
+		releaseDate.text = movieDetail.releaseDate
+		rateLabel.text = "\(rate)/10"
+		viewsLabel.text = "\(views)"
+		descriptionView.text = movieDetail.overview
+		rateImagesCalculate(movieDetail.voteAverage ?? 6.0)
+	}
+
+	func rateImagesCalculate(_ rate: Double) {
+		let result = rate / 2
+		let whole = Int(floor(result))
+		let decimal = result.truncatingRemainder(dividingBy: 1)
+		setRateImages(whole: whole, decimal: decimal)
+	}
+
+	func setRateImages(whole: Int, decimal: Double) {
+		let imagesView = [rateImage, rateImage2, rateImage3, rateImage4, rateImage5]
+		for i in 0..<whole {
+			imagesView[i].image = UIImage(named: "fstar")
+		}
+		if whole > 0 {
+			imagesView[whole].image = UIImage(named: "pstar")
+		}
+	}
+
+	//MARK: - API
 	func getDetailInfo(id: Int) {
 		NetworkManager.shared.getDetailInfo(id: id) { response in
 			self.movieData = response
@@ -469,44 +497,9 @@ extension MovieDetailsViewController {
 			self.youtubeId = response
 		}
 	}
-
-	func setData(_ movieDetail: MovieDetailEntity) {
-		let rate = movieDetail.voteAverage ?? 0
-		let views = movieDetail.voteCount ?? 0
-
-		titleLabel.text = movieDetail.originalTitle
-		rateLabel.text = movieDetail.originalLanguage
-		releaseDate.text = movieDetail.releaseDate
-		titleLabel.text = movieDetail.originalTitle
-		rateLabel.text = "\(rate)/10"
-		viewsLabel.text = "\(views)"
-		descriptionView.text = movieDetail.overview
-		rateImagesCalculate(movieDetail.voteAverage ?? 6.0)
-	}
-
-	func rateImagesCalculate(_ rate: Double) {
-		let result = rate / 2
-		let whole = Int(floor(result))
-		let decimal = result.truncatingRemainder(dividingBy: 1)
-		setRateImages(whole: whole, decimal: decimal)
-	}
-
-	func setRateImages(whole: Int, decimal: Double) {
-		let imagesView = [rateImage, rateImage2, rateImage3, rateImage4, rateImage5]
-		for i in 0..<whole {
-			imagesView[i].image = UIImage(named: "fstar")
-		}
-		if whole > 0 {
-			imagesView[whole].image = UIImage(named: "pstar")
-		}
-	}
-
-	@objc func buttonTapped() {
-		print("Button Tapped")
-	}
 }
 
-
+//MARK: - CollectionViewDelegate
 extension MovieDetailsViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 		if collectionView == genreCollectionView {

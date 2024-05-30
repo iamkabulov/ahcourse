@@ -8,7 +8,7 @@
 import UIKit
 
 class MoviesViewController: UIViewController {
-
+	//MARK: - Properties
 	private var themes = ["Popular", "Now Playing", "Upcoming", "Top Rated"]
 	var movieData: [List] = []
 	private var isFavList: [Int] = []
@@ -59,6 +59,7 @@ class MoviesViewController: UIViewController {
 		return view
 	}()
 
+	//MARK: - ViewLifeCycle
 	override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
 		collectionView(self.themeCollectionView, didSelectItemAt: index)
@@ -66,6 +67,7 @@ class MoviesViewController: UIViewController {
 
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
+		navigationController?.isNavigationBarHidden = true
 		themeCollectionView.selectItem(at: index, animated: false, scrollPosition: [])
 
 		MoviesCoreData.shared.loadNotes { data in
@@ -89,7 +91,6 @@ class MoviesViewController: UIViewController {
 		self.addView()
 		self.setupView()
 		self.themeCollectionView.allowsMultipleSelection = false
-
 	}
 
 

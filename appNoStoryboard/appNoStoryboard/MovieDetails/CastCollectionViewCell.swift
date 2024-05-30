@@ -9,11 +9,14 @@ import UIKit
 import SnapKit
 
 class CastCollectionViewCell: UICollectionViewCell {
+	//MARK: - Properties
 	static var identifier: String {
 		return String(describing: self)
 	}
 	
 	private var path: String?
+
+	//MARK: - StackViews
 	private lazy var vStackView: UIStackView = {
 		let stack = UIStackView()
 		stack.addSubview(artistName)
@@ -24,7 +27,6 @@ class CastCollectionViewCell: UICollectionViewCell {
 		stack.contentMode = .center
 		stack.distribution = .fillEqually
 		stack.alignment = .center
-//		stack.heightAnchor.constraint(equalToConstant: 10).isActive = true
 		stack.spacing = .zero
 		return stack
 	}()
@@ -36,14 +38,11 @@ class CastCollectionViewCell: UICollectionViewCell {
 		stack.translatesAutoresizingMaskIntoConstraints = false
 //		stack.backgroundColor = .blue
 		stack.axis = .horizontal
-//		stack.contentMode = .center
-//		stack.distribution = .equalSpacing
-//		stack.alignment = .center
-
 		stack.spacing = .zero
 		return stack
 	}()
 
+	//MARK: - Labels
 	private lazy var heroName: UILabel = {
 		let label = UILabel()
 		label.translatesAutoresizingMaskIntoConstraints = false
@@ -54,12 +53,6 @@ class CastCollectionViewCell: UICollectionViewCell {
 		return label
 	}()
 
-	private lazy var spinner: UIActivityIndicatorView = {
-		let spinner = UIActivityIndicatorView(style: .medium)
-		spinner.translatesAutoresizingMaskIntoConstraints = false
-		return spinner
-	}()
-
 	private lazy var artistName: UILabel = {
 		let label = UILabel()
 		label.translatesAutoresizingMaskIntoConstraints = false
@@ -67,6 +60,13 @@ class CastCollectionViewCell: UICollectionViewCell {
 		label.textAlignment = .center
 		label.text = "Tom Hardy"
 		return label
+	}()
+
+	//MARK: - Image and Spinner
+	private lazy var spinner: UIActivityIndicatorView = {
+		let spinner = UIActivityIndicatorView(style: .medium)
+		spinner.translatesAutoresizingMaskIntoConstraints = false
+		return spinner
 	}()
 
 	private lazy var artistImage: UIImageView = {
@@ -81,7 +81,7 @@ class CastCollectionViewCell: UICollectionViewCell {
 		return image
 	}()
 
-
+//MARK: - LifeCycle
 	override init(frame: CGRect) {
 		super.init(frame: frame)
 		setupView()
@@ -101,6 +101,7 @@ class CastCollectionViewCell: UICollectionViewCell {
 	}
 }
 
+//MARK: - Methods
 extension CastCollectionViewCell {
 	func setupView() {
 		contentView.addSubview(hStackView)
@@ -130,15 +131,10 @@ extension CastCollectionViewCell {
 
 	func loadImage(from url: String) {
 		path = url
-		if let urlString = URL(string: "https://image.tmdb.org/t/p/w500\(url)") {
-			DispatchQueue.global().async {
-				guard let data = try? Data(contentsOf: urlString), let image = UIImage(data: data) else {
-					return
-				}
-				DispatchQueue.main.async {
-					if url == self.path {
-						self.setImage(img: image)
-					}
+		NetworkManager.shared.loadImage(from: url) { image in
+			DispatchQueue.main.async {
+				if url == self.path {
+					self.setImage(img: image)
 				}
 			}
 		}
