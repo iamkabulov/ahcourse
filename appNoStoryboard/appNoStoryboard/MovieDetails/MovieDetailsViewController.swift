@@ -433,110 +433,41 @@ extension MovieDetailsViewController {
 
 
 	func getDetailInfo(id: Int) {
-		self.urlComponent.path = "/3/movie/\(id)"
-
-		guard let requestUrl = self.urlComponent.url else { return }
-
-		session.dataTask(with: requestUrl) { data, response, error in
-			DispatchQueue.main.async(flags: .barrier) { [self] in
-				guard let data = data, error == nil else {
-					return
-				}
-				do {
-					let response = try JSONDecoder().decode(MovieDetailEntity.self, from: data)
-
-					self.movieData = response
-					guard let detail = self.movieData else { return }
-					DispatchQueue.main.async {
-						self.setData(detail)
-					}
-					self.loadImage(from: detail.posterPath ?? "")
-					genreCollectionView.reloadData()
-					return
-				} catch {
-					return print(error)
-				}
+		NetworkManager.shared.getDetailInfo(id: id) { response in
+			self.movieData = response
+			guard let detail = self.movieData else { return }
+			DispatchQueue.main.async { [self] in
+				self.setData(detail)
+				self.genreCollectionView.reloadData()
 			}
-		}.resume()
-	}
-
-	func getCastInfo(_ id: Int) {
-		self.urlComponent.path = "/3/movie/\(id)/credits"
-
-		guard let requestUrl = self.urlComponent.url else { return }
-
-		session.dataTask(with: requestUrl) { data, response, error in
-			DispatchQueue.main.async(flags: .barrier) { [self] in
-				guard let data = data, error == nil else {
-					return
-				}
-				do {
-					let response = try JSONDecoder().decode(CastEntity.self, from: data)
-					self.castData = response
-					guard self.castData != nil else { return }
-
-					castCollectionView.reloadData()
-					return
-				} catch {
-					return print(error)
-				}
-			}
-		}.resume()
-	}
-
-	func loadImage(from url: String) {
-		if let urlString = URL(string: "https://image.tmdb.org/t/p/w500\(url)") {
-			DispatchQueue.global().async {
-				guard let data = try? Data(contentsOf: urlString), let image = UIImage(data: data) else {
-					return
-				}
+			NetworkManager.shared.loadImage(from: detail.posterPath ?? "") { img in
 				DispatchQueue.main.async {
-					self.moviePoster.image = image
+					self.moviePoster.image = img
 				}
 			}
 		}
 	}
 
-	func loadExternalIds(_ id: Int) {
-		self.urlComponent.path = "/3/movie/\(id)/external_ids"
-
-		guard let requestUrl = self.urlComponent.url else { return }
-
-		session.dataTask(with: requestUrl) { data, response, error in
-			DispatchQueue.main.async(flags: .barrier) { [self] in
-				guard let data = data, error == nil else {
-					return
-				}
-				do {
-					let response = try JSONDecoder().decode(ExternalIdsEntity.self, from: data)
-					self.externalLinks = response
-					return
-				} catch {
-					return print(error)
-				}
+	func getCastInfo(_ id: Int) {
+		NetworkManager.shared.getCastInfo(id) { response in
+			DispatchQueue.main.async {
+				self.castData = response
+				guard self.castData != nil else { return }
+				self.castCollectionView.reloadData()
 			}
-		}.resume()
+		}
+	}
+
+	func loadExternalIds(_ id: Int) {
+		NetworkManager.shared.loadExternalIds(id) { response in
+			self.externalLinks = response
+		}
 	}
 
 	func loadYoutubeId(_ id: Int) {
-		self.urlComponent.path = "/3/movie/\(id)/videos"
-
-		guard let requestUrl = self.urlComponent.url else { return }
-
-		session.dataTask(with: requestUrl) { data, response, error in
-			DispatchQueue.main.async(flags: .barrier) { [self] in
-				guard let data = data, error == nil else {
-					return
-				}
-				do {
-					let response = try JSONDecoder().decode(YoutubeIdEntity.self, from: data)
-					self.youtubeId = response
-					return
-				} catch {
-					return print(error)
-				}
-			}
-		}.resume()
+		NetworkManager.shared.loadYoutubeId(id) { response in
+			self.youtubeId = response
+		}
 	}
 
 	func setData(_ movieDetail: MovieDetailEntity) {

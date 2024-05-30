@@ -73,7 +73,6 @@ class MoviesViewController: UIViewController {
 				item.id
 			}
 		}
-		print(isFavList)
 		self.tableView.reloadData()
 	}
 

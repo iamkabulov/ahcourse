@@ -94,22 +94,17 @@ final class MovieViewCell: UITableViewCell {
 		id = movie.id
 		path = movie.posterPath
 		setImage(img: nil)
-		if let cachedImage = ImageCache.shared.object(forKey: movie.posterPath as NSString) {
-			setImage(img: cachedImage)
-		} else {
-			networking.loadImage(from: movie.posterPath) { img in
-				if self.path == movie.posterPath {
-					DispatchQueue.main.async {
-						ImageCache.shared.setObject(img, forKey: movie.posterPath as NSString)
-						self.setImage(img: img)
-					}
+		networking.loadImage(from: movie.posterPath) { img in
+			if self.path == movie.posterPath {
+				DispatchQueue.main.async {
+					self.setImage(img: img)
 				}
 			}
 		}
 	}
 
-	func setData(by id: Int) {
-		titleLabel.text = "\(id)"
+	func setData(title id: String) {
+		titleLabel.text = id
 	}
 
 	func isFav(_ value: Bool) {
@@ -135,6 +130,10 @@ final class MovieViewCell: UITableViewCell {
 		self.spinner.isHidden = true
 		self.movieImage.image = img
 		self.contentView.layoutIfNeeded()
+	}
+
+	func hideFavButton() {
+		addToFavouriteButton.isHidden = true
 	}
 }
 
