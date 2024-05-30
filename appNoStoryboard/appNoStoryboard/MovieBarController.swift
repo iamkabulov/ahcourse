@@ -18,7 +18,7 @@ final class MovieBarController: UITabBarController {
 	func setupViews() {
 		let mainViewController = MoviesViewController()
 		let favouritesController = FavouritesViewController()
-		let watchListController = UIViewController()
+		let watchListController = WatchListViewController()
 		let findController = UIViewController()
 		let profileController = UIViewController()
 

@@ -319,12 +319,9 @@ class MovieDetailsViewController: UIViewController {
 	}()
 
 	private lazy var addWatchList: UIButton = {
-		let button = UIButton(type: .system)
+		let button = UIButton(type: .custom)
 		button.translatesAutoresizingMaskIntoConstraints = false
-		button.setTitle("Add To Watch List", for: .normal)
-		button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
-		button.backgroundColor = UIColor(red: 0.16, green: 0.38, blue: 0.94, alpha: 1.00)
-		button.tintColor = .white
+		button.addTarget(self, action: #selector(addToWatchList), for: .touchUpInside)
 		button.heightAnchor.constraint(equalToConstant: 40).isActive = true
 		button.layer.cornerRadius = 15
 		button.clipsToBounds = true
@@ -354,6 +351,7 @@ class MovieDetailsViewController: UIViewController {
 		castCollectionView.reloadData()
 		loadExternalIds(id)
 		loadYoutubeId(id)
+		isAdded()
 	}
 }
 
@@ -374,6 +372,28 @@ extension MovieDetailsViewController {
 			UIApplication.shared.open(URL(string: "https://www.youtube.com/watch?v=\(id)")!)
 		default:
 			print("other")
+		}
+	}
+
+	@objc func addToWatchList(_ sender: UIButton) {
+		guard let name = sender.title(for: .normal) else { return }
+		if name == "Add to Watch List" {
+			WatchListUserDefaults.shared.saveMovie(with: id)
+		} else if name == "Remove from Watch List" {
+			WatchListUserDefaults.shared.deleteMovie(with: id)
+		}
+		isAdded()
+	}
+
+	func isAdded() {
+		if WatchListUserDefaults.shared.findMovieBy(id: id) {
+			addWatchList.setTitle("Remove from Watch List", for: .normal)
+			addWatchList.backgroundColor = .red
+			addWatchList.tintColor = .white
+		} else {
+			addWatchList.setTitle("Add to Watch List", for: .normal)
+			addWatchList.backgroundColor = UIColor(red: 0.16, green: 0.38, blue: 0.94, alpha: 1.00)
+			addWatchList.tintColor = .white
 		}
 	}
 
@@ -403,8 +423,8 @@ extension MovieDetailsViewController {
 			rateLabel.trailingAnchor.constraint(equalTo: vStackRateAndViews.trailingAnchor, constant: -10),
 			viewsLabel.trailingAnchor.constraint(equalTo: vStackRateAndViews.trailingAnchor, constant: -10),
 			imdb.leadingAnchor.constraint(equalTo: hStackLink.leadingAnchor, constant: 96),
-			youtube.leadingAnchor.constraint(equalTo: imdb.trailingAnchor, constant: 10),
-			facebook.leadingAnchor.constraint(equalTo: youtube.trailingAnchor, constant: 10),
+			facebook.leadingAnchor.constraint(equalTo: imdb.trailingAnchor, constant: 10),
+			youtube.leadingAnchor.constraint(equalTo: facebook.trailingAnchor, constant: 10),
 			addWatchList.leadingAnchor.constraint(equalTo: hStackButton.leadingAnchor, constant: 80),
 			addWatchList.trailingAnchor.constraint(equalTo: hStackButton.trailingAnchor, constant: -80),
 			addWatchList.bottomAnchor.constraint(equalTo: stackView.bottomAnchor, constant: -10)

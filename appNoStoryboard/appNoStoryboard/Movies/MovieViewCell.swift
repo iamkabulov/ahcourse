@@ -108,6 +108,10 @@ final class MovieViewCell: UITableViewCell {
 		}
 	}
 
+	func setData(by id: Int) {
+		titleLabel.text = "\(id)"
+	}
+
 	func isFav(_ value: Bool) {
 		if value {
 			addToFavouriteButton.setImage(UIImage(named: "fstar"), for: .normal)

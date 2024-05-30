@@ -22,7 +22,15 @@ class MoviesViewController: UIViewController {
 		return label
 	}()
 
-	
+	lazy var titleLabel: UILabel = {
+		let label = UILabel()
+		label.translatesAutoresizingMaskIntoConstraints = false
+		label.textAlignment = .center
+		label.font = UIFont.systemFont(ofSize: 36, weight: .semibold)
+		label.text = "Movie DB"
+
+		return label
+	}()
 
 	lazy var tableView: UITableView = {
 		let view = UITableView()
@@ -78,7 +86,6 @@ class MoviesViewController: UIViewController {
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		self.title = "Movie DB"
 		self.view.backgroundColor = .systemBackground
 		self.addView()
 		self.setupView()
@@ -98,10 +105,13 @@ extension MoviesViewController {
 
 	func setupView() {
 		self.view.addSubview(self.themeLabel)
+		self.view.addSubview(self.titleLabel)
 		self.view.addSubview(self.tableView)
 		self.view.addSubview(self.themeCollectionView)
 		NSLayoutConstraint.activate([
-			themeLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+			titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+			titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+			themeLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor),
 			themeLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: CGFloat(15)),
 			themeCollectionView.topAnchor.constraint(equalTo: themeLabel.bottomAnchor, constant: CGFloat(5)),
 			themeCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: CGFloat(10)),
