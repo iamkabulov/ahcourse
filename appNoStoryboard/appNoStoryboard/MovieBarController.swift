@@ -19,18 +19,19 @@ final class MovieBarController: UITabBarController {
 		let mainViewController = MoviesViewController()
 		let favouritesController = FavouritesViewController()
 		let watchListController = WatchListViewController()
-		let findController = UIViewController()
+		let findController = SearchViewController()
 		let profileController = UIViewController()
 
 		let homeNav = UINavigationController(rootViewController: mainViewController)
 		let watchNav = UINavigationController(rootViewController: watchListController)
 		let favNav = UINavigationController(rootViewController: favouritesController)
-
+		let searchNav = UINavigationController(rootViewController: findController)
 		mainViewController.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house"), selectedImage: nil)
 		favouritesController.tabBarItem = UITabBarItem(title: "Favourites", image: UIImage(systemName: "star"), selectedImage: nil)
 		watchListController.tabBarItem = UITabBarItem(title: "Watch list", image: UIImage(systemName: "memories.badge.plus"), selectedImage: nil)
 		findController.tabBarItem = UITabBarItem(title: "Find", image: UIImage(systemName: "magnifyingglass"), selectedImage: nil)
 		profileController.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person.crop.circle"), selectedImage: nil)
+		
 		let tabBarList = [homeNav, favNav, watchNav, findController, profileController]
 		self.viewControllers = tabBarList
 	}
