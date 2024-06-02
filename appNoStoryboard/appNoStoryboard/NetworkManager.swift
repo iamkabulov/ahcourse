@@ -192,4 +192,27 @@ class NetworkManager {
 			}
 		}.resume()
 	}
+
+	func searchByName(_ title: String, completionHandler: @escaping (TopRated) -> Void) {
+		self.urlComponent.path = "/3/search/movie"
+		self.urlComponent.queryItems = [URLQueryItem(name: "query", value: title), URLQueryItem(name: "api_key", value: apiKey)]
+
+		guard let requestUrl = self.urlComponent.url else { return }
+		print(requestUrl)
+		DispatchQueue.main.async(flags: .barrier) {
+			self.session.dataTask(with: requestUrl) { data, response, error in
+				guard let data = data, error == nil else {
+					return
+				}
+				do {
+					let response = try JSONDecoder().decode(TopRated.self, from: data)
+					completionHandler(response)
+					return
+				} catch {
+					print(error)
+					return
+				}
+			}.resume()
+		}
+	}
 }

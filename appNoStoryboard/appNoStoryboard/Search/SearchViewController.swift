@@ -11,6 +11,7 @@ class SearchViewController: UIViewController {
 	//MARK: - Properties
 	var movieData: [List] = []
 	private var isFavList: [Int] = []
+	private var favMovies: [FavouriteMovies] = []
 	private let networking = NetworkManager.shared
 
 	lazy var titleLabel: UILabel = {
@@ -25,34 +26,12 @@ class SearchViewController: UIViewController {
 
 
 	//MARK: - SearchView
-	lazy var stackSearchView: UIStackView = {
-		let stack = UIStackView()
-		stack.addSubview(searchField)
-		stack.addSubview(imageView)
-		stack.translatesAutoresizingMaskIntoConstraints = false
-		stack.axis = .horizontal
-		stack.heightAnchor.constraint(equalToConstant: 40).isActive = true
-		stack.layer.cornerRadius = 10
-		stack.backgroundColor = .systemGray4
-		return stack
-	}()
-
-	lazy var imageView: UIImageView = {
-		let image = UIImageView()
-		image.translatesAutoresizingMaskIntoConstraints = false
-		image.image = UIImage(systemName: "magnifyingglass")
-		image.contentMode = .scaleAspectFill
-		image.tintColor = .gray
-		image.heightAnchor.constraint(equalToConstant: 28).isActive = true
-		image.widthAnchor.constraint(equalToConstant: 28).isActive = true
-		return image
-	}()
-
-	lazy var searchField: UITextField = {
-		let input = UITextField()
+	lazy var searchField: UISearchTextField = {
+		let input = UISearchTextField()
 		input.translatesAutoresizingMaskIntoConstraints = false
-		input.layer.cornerRadius = 5
+		input.autocorrectionType = .no
 		input.tintColor = .black
+		input.delegate = self
 		input.placeholder = "Search"
 		return input
 	}()
@@ -97,6 +76,10 @@ class SearchViewController: UIViewController {
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		navigationController?.isNavigationBarHidden = true
+		navigationItem.hidesSearchBarWhenScrolling = true
+		MoviesCoreData.shared.loadNotes { [self] data in
+			self.favMovies = data
+		}
 		self.tableView.reloadData()
 	}
 
@@ -124,25 +107,19 @@ extension SearchViewController {
 	func setupView() {
 		self.view.addSubview(self.titleLabel)
 		self.view.addSubview(self.tableView)
-		self.view.addSubview(self.stackSearchView)
+		self.view.addSubview(self.searchField)
 		self.view.addSubview(self.notFoundImage)
 		self.view.addSubview(self.infoLabel)
 		NSLayoutConstraint.activate([
 			titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
 			titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-			stackSearchView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
-			stackSearchView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
-			stackSearchView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
-			tableView.topAnchor.constraint(equalTo: stackSearchView.bottomAnchor),
+			searchField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
+			searchField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
+			searchField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
+			tableView.topAnchor.constraint(equalTo: searchField.bottomAnchor, constant: 10),
 			tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
 			tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
 			tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-
-			imageView.leadingAnchor.constraint(equalTo: stackSearchView.leadingAnchor, constant: 10),
-			imageView.centerYAnchor.constraint(equalTo: stackSearchView.centerYAnchor),
-			searchField.centerYAnchor.constraint(equalTo: stackSearchView.centerYAnchor),
-			searchField.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 10),
-			searchField.trailingAnchor.constraint(equalTo: stackSearchView.trailingAnchor, constant: -10),
 
 			notFoundImage.centerYAnchor.constraint(equalTo: view.centerYAnchor),
 			notFoundImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -161,11 +138,12 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		guard let cell = self.tableView.dequeueReusableCell(withIdentifier: MovieViewCell.identifier, for: indexPath) as? MovieViewCell else { return UITableViewCell() }
 		cell.setData(movie: movieData[indexPath.row])
-		if isFavList.isEmpty {
+		guard let favId = movieData[indexPath.row].id else { return cell }
+		if favMovies.isEmpty {
 			cell.isFav(false)
 		} else {
-			let _ = isFavList.filter { id in
-				if movieData[indexPath.row].id == id {
+			let _ = favMovies.filter { movie in
+				if favId == movie.id {
 					cell.isFav(true)
 				}
 				return false
@@ -175,46 +153,31 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
 	}
 
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-		let detailView = MovieDetailsViewController(id: movieData[indexPath.row].id)
+		let detailView = MovieDetailsViewController(id: movieData[indexPath.row].id ?? 0)
 		self.navigationController?.pushViewController(detailView, animated: true)
 	}
 }
 
 //MARK: - API
-extension SearchViewController {
+extension SearchViewController: UITextFieldDelegate {
 
-	func loadMovies(_ path: String) {
-		switch path {
-		case "Upcoming":
-			networking.getUpcomingMovies { result in
-				self.movieData = result
-				DispatchQueue.main.async {
-					self.tableView.reloadData()
-				}
+	func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+		guard let title = textField.text else { return true }
+		networking.searchByName(title) { result in
+			self.movieData = result.results ?? []
+			print(self.movieData)
+			DispatchQueue.main.async { [self] in
+				self.notFound(!movieData.isEmpty)
+				self.tableView.reloadData()
+
 			}
-		case "Popular":
-			networking.getPopularMovies { result in
-				self.movieData = result
-				DispatchQueue.main.async {
-					self.tableView.reloadData()
-				}
-			}
-		case "Now Playing":
-			networking.getNowPlaying { result in
-				self.movieData = result
-				DispatchQueue.main.async {
-					self.tableView.reloadData()
-				}
-			}
-		case "Top Rated":
-			networking.getTopRated { result in
-				self.movieData = result
-				DispatchQueue.main.async {
-					self.tableView.reloadData()
-				}
-			}
-		default:
-			print("Something went wrong.")
 		}
+		textField.resignFirstResponder()
+		return true
+	}
+
+	func notFound(_ value: Bool) {
+		notFoundImage.isHidden = value
+		infoLabel.isHidden = value
 	}
 }

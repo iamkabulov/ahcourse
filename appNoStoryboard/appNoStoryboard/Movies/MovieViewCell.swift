@@ -95,7 +95,7 @@ final class MovieViewCell: UITableViewCell {
 		id = movie.id
 		path = movie.posterPath
 		setImage(img: nil)
-		networking.loadImage(from: movie.posterPath) { img in
+		networking.loadImage(from: movie.posterPath ?? "" ) { img in
 			if self.path == movie.posterPath {
 				DispatchQueue.main.async {
 					self.setImage(img: img)

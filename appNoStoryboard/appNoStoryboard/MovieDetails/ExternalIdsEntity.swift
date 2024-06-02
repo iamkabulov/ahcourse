@@ -10,8 +10,8 @@ import Foundation
 // MARK: - ExternalIdsEntity
 struct ExternalIdsEntity: Codable {
 	let id: Int
-	let imdbID, wikidataID, facebookID, instagramID: String
-	let twitterID: String
+	let imdbID, wikidataID, facebookID, instagramID: String?
+	let twitterID: String?
 
 	enum CodingKeys: String, CodingKey {
 		case id

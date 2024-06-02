@@ -147,7 +147,7 @@ extension MoviesViewController: UITableViewDelegate, UITableViewDataSource {
 	}
 
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-		let detailView = MovieDetailsViewController(id: movieData[indexPath.row].id)
+		let detailView = MovieDetailsViewController(id: movieData[indexPath.row].id ?? 0)
 		self.navigationController?.pushViewController(detailView, animated: true)
 	}
 }
