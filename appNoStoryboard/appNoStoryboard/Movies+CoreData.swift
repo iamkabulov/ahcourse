@@ -86,7 +86,7 @@ extension MoviesCoreData {
 
 	private func fetchById(_ id: Int) -> Favourites? {
 		let fetchRequest = Favourite.fetchRequest()
-		fetchRequest.predicate = NSPredicate(format: "id == %@", NSNumber(value: id))
+		fetchRequest.predicate = NSPredicate(format: "id == %@", NSNumber(value: id)) ///можно и строкой "\(id)"
 
 		do {
 			let results = try context.fetch(fetchRequest)

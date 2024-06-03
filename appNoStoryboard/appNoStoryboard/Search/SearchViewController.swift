@@ -9,7 +9,8 @@ import UIKit
 
 class SearchViewController: UIViewController {
 	//MARK: - Properties
-	var movieData: [List] = []
+	private var movieData: [List] = []
+	private var isSearched: Bool = false
 	private let networking = NetworkManager.shared
 
 	//MARK: - title
@@ -78,25 +79,29 @@ class SearchViewController: UIViewController {
 	}()
 
 	//MARK: - ViewLifeCycle
+	override func viewWillAppear(_ animated: Bool) {
+		super.viewWillAppear(animated)
+		navigationController?.isNavigationBarHidden = true
+		if !isSearched {
+			self.hideRecommendedList(false)
+			self.networking.recommendationList() { data in
+				self.movieData = data.results ?? []
+				DispatchQueue.main.async {
+					self.showNotFound(!self.movieData.isEmpty)
+					self.tableView.reloadData()
+				}
+			}
+		}
+	}
+
 	override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
 	}
 
-	override func viewWillAppear(_ animated: Bool) {
-		super.viewWillAppear(animated)
-		navigationController?.isNavigationBarHidden = true
-		self.networking.recommendationList() { data in
-			self.movieData = data.results ?? []
-			DispatchQueue.main.async {
-				self.showNotFound(!self.movieData.isEmpty)
-				self.tableView.reloadData()
-			}
-		}
-		self.tableView.reloadData()
-	}
-
 	override func viewDidDisappear(_ animated: Bool) {
 		super.viewDidDisappear(animated)
+		isSearched = true
+
 	}
 
 	override func viewDidLoad() {
@@ -161,6 +166,7 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 		let detailView = MovieDetailsViewController(id: movieData[indexPath.row].id ?? 0)
 		self.navigationController?.pushViewController(detailView, animated: true)
+		tableView.deselectRow(at: indexPath, animated: true)
 	}
 }
 
