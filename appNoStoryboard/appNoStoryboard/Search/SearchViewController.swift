@@ -10,16 +10,25 @@ import UIKit
 class SearchViewController: UIViewController {
 	//MARK: - Properties
 	var movieData: [List] = []
-	private var isFavList: [Int] = []
-	private var favMovies: [FavouriteMovies] = []
 	private let networking = NetworkManager.shared
 
+	//MARK: - title
 	lazy var titleLabel: UILabel = {
 		let label = UILabel()
 		label.translatesAutoresizingMaskIntoConstraints = false
 		label.textAlignment = .center
 		label.font = UIFont.systemFont(ofSize: 36, weight: .semibold)
 		label.text = "Search"
+
+		return label
+	}()
+
+	lazy var recommendedLabel: UILabel = {
+		let label = UILabel()
+		label.translatesAutoresizingMaskIntoConstraints = false
+		label.textAlignment = .center
+		label.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
+		label.text = "Recommended For You"
 
 		return label
 	}()
@@ -76,9 +85,12 @@ class SearchViewController: UIViewController {
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		navigationController?.isNavigationBarHidden = true
-		navigationItem.hidesSearchBarWhenScrolling = true
-		MoviesCoreData.shared.loadNotes { [self] data in
-			self.favMovies = data
+		self.networking.recommendationList() { data in
+			self.movieData = data.results ?? []
+			DispatchQueue.main.async {
+				self.showNotFound(!self.movieData.isEmpty)
+				self.tableView.reloadData()
+			}
 		}
 		self.tableView.reloadData()
 	}
@@ -106,6 +118,7 @@ extension SearchViewController {
 
 	func setupView() {
 		self.view.addSubview(self.titleLabel)
+		self.view.addSubview(self.recommendedLabel)
 		self.view.addSubview(self.tableView)
 		self.view.addSubview(self.searchField)
 		self.view.addSubview(self.notFoundImage)
@@ -116,10 +129,13 @@ extension SearchViewController {
 			searchField.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
 			searchField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
 			searchField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
-			tableView.topAnchor.constraint(equalTo: searchField.bottomAnchor, constant: 10),
+			tableView.topAnchor.constraint(equalTo: searchField.bottomAnchor, constant: 35),
 			tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
 			tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
 			tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+
+			recommendedLabel.topAnchor.constraint(equalTo: searchField.bottomAnchor, constant: 10),
+			recommendedLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
 
 			notFoundImage.centerYAnchor.constraint(equalTo: view.centerYAnchor),
 			notFoundImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -138,17 +154,7 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		guard let cell = self.tableView.dequeueReusableCell(withIdentifier: MovieViewCell.identifier, for: indexPath) as? MovieViewCell else { return UITableViewCell() }
 		cell.setData(movie: movieData[indexPath.row])
-		guard let favId = movieData[indexPath.row].id else { return cell }
-		if favMovies.isEmpty {
-			cell.isFav(false)
-		} else {
-			let _ = favMovies.filter { movie in
-				if favId == movie.id {
-					cell.isFav(true)
-				}
-				return false
-			}
-		}
+		cell.hideFavButton()
 		return cell
 	}
 
@@ -163,21 +169,37 @@ extension SearchViewController: UITextFieldDelegate {
 
 	func textFieldShouldReturn(_ textField: UITextField) -> Bool {
 		guard let title = textField.text else { return true }
-		networking.searchByName(title) { result in
-			self.movieData = result.results ?? []
-			print(self.movieData)
-			DispatchQueue.main.async { [self] in
-				self.notFound(!movieData.isEmpty)
-				self.tableView.reloadData()
+		if title == "" {
+			networking.recommendationList() { data in
+				self.movieData = data.results ?? []
+				DispatchQueue.main.async {
+					self.showNotFound(!self.movieData.isEmpty)
+					self.hideRecommendedList(false)
+					self.tableView.reloadData()
+				}
+			}
+		} else {
+			networking.searchByName(title) { result in
+				self.movieData = result.results ?? []
+				DispatchQueue.main.async { [self] in
+					self.showNotFound(!movieData.isEmpty)
+					self.hideRecommendedList(true)
+					self.tableView.reloadData()
 
+				}
 			}
 		}
+
 		textField.resignFirstResponder()
 		return true
 	}
 
-	func notFound(_ value: Bool) {
+	func showNotFound(_ value: Bool) {
 		notFoundImage.isHidden = value
 		infoLabel.isHidden = value
+	}
+
+	func hideRecommendedList(_ value: Bool) {
+		recommendedLabel.isHidden = value
 	}
 }

@@ -32,7 +32,7 @@ final class MovieViewCell: UITableViewCell {
 	private lazy var titleLabel: UILabel = {
 		let label = UILabel()
 		label.translatesAutoresizingMaskIntoConstraints = false
-		label.font = UIFont.preferredFont(forTextStyle: .headline)
+		label.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
 		label.textAlignment = .center
 		return label
 	}()

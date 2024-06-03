@@ -117,7 +117,7 @@ extension MoviesViewController {
 			themeCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: CGFloat(10)),
 			themeCollectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -CGFloat(10)),
 			themeCollectionView.heightAnchor.constraint(equalToConstant: CGFloat(30)),
-			tableView.topAnchor.constraint(equalTo: themeCollectionView.bottomAnchor),
+			tableView.topAnchor.constraint(equalTo: themeCollectionView.bottomAnchor, constant: 5),
 			tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
 			tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
 			tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
