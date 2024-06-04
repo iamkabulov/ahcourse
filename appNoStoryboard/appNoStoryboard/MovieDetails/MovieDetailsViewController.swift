@@ -327,7 +327,6 @@ class MovieDetailsViewController: UIViewController {
 	//MARK: - ViewLifeCycle
 	init(id: Int) {
 		self.id = id
-		print(id)
 		super.init(nibName: nil, bundle: nil)
 	}
 
@@ -559,5 +558,10 @@ extension MovieDetailsViewController: UICollectionViewDelegate, UICollectionView
 			return CGSize(width: 200, height: 60)
 		}
 		return CGSize(width: 100, height: 100)
+	}
+
+	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+		let detailView = ActorDetailsViewController(id: self.castData?.cast[indexPath.row].id ?? 1)
+		self.navigationController?.pushViewController(detailView, animated: true)
 	}
 }

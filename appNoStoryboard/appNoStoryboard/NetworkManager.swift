@@ -136,6 +136,26 @@ class NetworkManager {
 		}.resume()
 	}
 
+	func getActorDetailInfo(id: Int, completionHandler: @escaping (ActorEntity) -> Void) {
+		self.urlComponent.path = "/3/person/\(id)"
+
+		guard let requestUrl = self.urlComponent.url else { return }
+		print(requestUrl)
+		session.dataTask(with: requestUrl) { data, response, error in
+			guard let data = data, error == nil else {
+				return
+			}
+			do {
+				let response = try JSONDecoder().decode(ActorEntity.self, from: data)
+				completionHandler(response)
+				print(response)
+				return
+			} catch {
+				return print(error)
+			}
+		}.resume()
+	}
+
 	func getCastInfo(_ id: Int, completionHandler: @escaping (CastEntity) -> Void) {
 		self.urlComponent.path = "/3/movie/\(id)/credits"
 
