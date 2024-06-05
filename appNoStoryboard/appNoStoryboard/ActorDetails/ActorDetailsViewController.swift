@@ -26,10 +26,10 @@ class ActorDetailsViewController: UIViewController {
 
 	//MARK: - StackViewComponent
 	private lazy var stackView: UIStackView = {
-		let stack = UIStackView(arrangedSubviews: [actorPoster, titleStackView, vStackOverview, castLabel, castCollectionView, linkLabel, hStackLink, hStackButton])
+		let stack = UIStackView(arrangedSubviews: [actorPoster, titleStackView, vStackOverview, castLabel, photos, castCollectionView, linkLabel, hStackLink, hStackButton])
 		stack.translatesAutoresizingMaskIntoConstraints = false
 		stack.axis = .vertical
-		stack.spacing = 40
+		stack.spacing = 30
 		return stack
 	}()
 
@@ -127,6 +127,9 @@ class ActorDetailsViewController: UIViewController {
 //		label.heightAnchor.constraint(equalToConstant: 250).isActive = true
 		return label
 	}()
+
+	//MARK: - Photos
+	private lazy var photos = PhotoView()
 
 	//MARK: - CastViewComponent
 	private lazy var castLabel: UILabel = {
@@ -258,7 +261,7 @@ class ActorDetailsViewController: UIViewController {
 extension ActorDetailsViewController {
 	//MARK: - AttributedText
 	func setAttributedText(prefix: String, value: String) -> NSMutableAttributedString {
-		var arr = NSMutableAttributedString(string: "\(prefix) ", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 20, weight: .bold)])
+		let arr = NSMutableAttributedString(string: "\(prefix) ", attributes: [NSAttributedString.Key.font : UIFont.systemFont(ofSize: 20, weight: .bold)])
 		arr.append(NSMutableAttributedString(string: value))
 		return arr
 	}
@@ -351,7 +354,7 @@ extension ActorDetailsViewController {
 //MARK: - CollectionViewDelegate
 extension ActorDetailsViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-		return 10
+		return 4
 	}
 
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
