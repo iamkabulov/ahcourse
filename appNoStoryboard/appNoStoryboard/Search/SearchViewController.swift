@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Lottie
 
 class SearchViewController: UIViewController {
 	//MARK: - Properties
@@ -47,12 +48,14 @@ class SearchViewController: UIViewController {
 	}()
 
 	//MARK: - EmptyScreenImage
-	private lazy var notFoundImage: UIImageView = {
-		let image = UIImageView()
+	private lazy var notFoundImage: LottieAnimationView = {
+		let image = LottieAnimationView()
 		image.translatesAutoresizingMaskIntoConstraints = false
-		image.image = UIImage(named: "nofav")
 		image.heightAnchor.constraint(equalToConstant: 151).isActive = true
 		image.widthAnchor.constraint(equalToConstant: 149).isActive = true
+		image.animation = LottieAnimation.named("NotFound")
+		image.loopMode = .loop
+		image.play()
 		return image
 	}()
 
@@ -117,7 +120,6 @@ class SearchViewController: UIViewController {
 //MARK: - TableView
 extension SearchViewController {
 	func addView() {
-//		self.title = "TABLEVIEW"
 
 	}
 
