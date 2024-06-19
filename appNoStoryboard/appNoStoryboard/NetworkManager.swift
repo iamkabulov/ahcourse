@@ -148,7 +148,7 @@ class NetworkManager {
 			do {
 				let response = try JSONDecoder().decode(ActorEntity.self, from: data)
 				completionHandler(response)
-				print(response)
+//				print(response)
 				return
 			} catch {
 				return print(error)
@@ -226,6 +226,28 @@ class NetworkManager {
 				}
 				do {
 					let response = try JSONDecoder().decode(TopRated.self, from: data)
+					completionHandler(response)
+					return
+				} catch {
+					print(error)
+					return
+				}
+			}.resume()
+		}
+	}
+
+	func loadImages(_ personId: Int, completionHandler: @escaping (ImagesEntity) -> Void) {
+		self.urlComponent.path = "/3/person/\(personId)/images"
+
+		guard let requestUrl = self.urlComponent.url else { return }
+		print(requestUrl)
+		DispatchQueue.main.async(flags: .barrier) {
+			self.session.dataTask(with: requestUrl) { data, response, error in
+				guard let data = data, error == nil else {
+					return
+				}
+				do {
+					let response = try JSONDecoder().decode(ImagesEntity.self, from: data) /// ТУТ ОШИБКА ДЕКОДИНГА
 					completionHandler(response)
 					return
 				} catch {

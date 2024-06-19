@@ -255,6 +255,7 @@ class ActorDetailsViewController: UIViewController {
 		castCollectionView.reloadData()
 		loadExternalIds(id)
 		loadYoutubeId(id)
+		loadImages(id)
 	}
 }
 
@@ -348,6 +349,20 @@ extension ActorDetailsViewController {
 		NetworkManager.shared.loadYoutubeId(id) { response in
 			self.youtubeId = response
 		}
+	}
+
+	func loadImages(_ personId: Int) {
+		NetworkManager.shared.loadImages(personId) { response in
+			self.loadImagesForView(response.profiles ?? [])
+		}
+	}
+
+	func loadImagesForView(_ data: [Profile]) {
+//		for profile in data {
+//			NetworkManager.shared.loadImage(from: profile.filePath ?? "") { img in
+//				self.photos.setImage(img)
+//			}
+//		}
 	}
 }
 

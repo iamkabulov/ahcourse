@@ -14,7 +14,7 @@ struct ActorEntity: Codable {
 	let deathday: String?
 	let gender: Int?
 	let homepage: String?
-	let id: Int?
+	let id: Int
 	let imdbID, knownForDepartment, name, placeOfBirth: String?
 	let popularity: Double?
 	let profilePath: String?
