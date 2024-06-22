@@ -28,6 +28,8 @@ class PhotoView: UIView {
 		view.image = UIImage(named: "movie")
 		view.translatesAutoresizingMaskIntoConstraints = false
 		view.contentMode = .scaleAspectFill
+		view.layer.cornerRadius = 4
+		view.clipsToBounds = true
 		view.heightAnchor.constraint(equalToConstant: 107).isActive = true
 		view.widthAnchor.constraint(equalToConstant: 58).isActive = true
 		return view
@@ -38,6 +40,8 @@ class PhotoView: UIView {
 		view.image = UIImage(named: "movie")
 		view.translatesAutoresizingMaskIntoConstraints = false
 		view.contentMode = .scaleAspectFill
+		view.layer.cornerRadius = 4
+		view.clipsToBounds = true
 		view.heightAnchor.constraint(equalToConstant: 107).isActive = true
 		view.widthAnchor.constraint(equalToConstant: 58).isActive = true
 		return view
@@ -48,6 +52,8 @@ class PhotoView: UIView {
 		view.image = UIImage(named: "movie")
 		view.translatesAutoresizingMaskIntoConstraints = false
 		view.contentMode = .scaleAspectFill
+		view.layer.cornerRadius = 4
+		view.clipsToBounds = true
 		view.heightAnchor.constraint(equalToConstant: 107).isActive = true
 		view.widthAnchor.constraint(equalToConstant: 58).isActive = true
 		return view
@@ -58,10 +64,19 @@ class PhotoView: UIView {
 		view.image = UIImage(named: "movie")
 		view.translatesAutoresizingMaskIntoConstraints = false
 		view.contentMode = .scaleAspectFill
+		view.layer.cornerRadius = 4
+		view.clipsToBounds = true
 		view.alpha = 0.4
 		view.heightAnchor.constraint(equalToConstant: 107).isActive = true
 		view.widthAnchor.constraint(equalToConstant: 58).isActive = true
 		return view
+	}()
+
+	private lazy var imagesCountLabel: UILabel = {
+		let label = UILabel()
+		label.translatesAutoresizingMaskIntoConstraints = false
+		label.text = "+1"
+		return label
 	}()
 
 	override init(frame: CGRect) {
@@ -80,10 +95,15 @@ extension PhotoView {
 
 	func setupView() {
 		addSubview(stackView)
+		addSubview(imagesCountLabel)
 		stackView.snp.makeConstraints { make in
 			make.top.bottom.equalToSuperview()
 			make.leading.equalTo(20)
 			make.trailing.equalTo(-20)
+		}
+
+		imagesCountLabel.snp.makeConstraints { make in
+			make.centerX.centerY.equalTo(imageView4)
 		}
 	}
 
@@ -93,11 +113,17 @@ extension PhotoView {
 	}
 
 	func setImages() {
-		if !images.isEmpty && images.count > 3 {
+		if images.count > 3 {
 			imageView.image = images[0]
 			imageView2.image = images[1]
 			imageView3.image = images[2]
 			imageView4.image = images[3]
 		}
+	}
+
+	func update() {
+		print(images.count)
+		imagesCountLabel.text = "+\(images.count)"
+		self.layoutIfNeeded()
 	}
 }

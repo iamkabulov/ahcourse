@@ -7,13 +7,14 @@
 
 import Foundation
 
-struct ImagesEntityRoot: Codable {
-	let images: [ImagesEntity]?
-}
-
-struct ImagesEntity: Codable, Identifiable {
+struct ImagesEntity: Codable {
 	let id: Int
 	let profiles: [Profile]?
+
+	enum CodingKeys: String, CodingKey {
+		case id = "id"
+		case profiles
+	}
 }
 
 // MARK: - Profile

@@ -247,7 +247,7 @@ class NetworkManager {
 					return
 				}
 				do {
-					let response = try JSONDecoder().decode(ImagesEntity.self, from: data) /// ТУТ ОШИБКА ДЕКОДИНГА
+					let response = try JSONDecoder().decode(ImagesEntity.self, from: data)/// ТУТ ОШИБКА ДЕКОДИНГА /// исправил
 					completionHandler(response)
 					return
 				} catch {

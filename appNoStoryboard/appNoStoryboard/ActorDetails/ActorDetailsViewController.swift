@@ -243,6 +243,11 @@ class ActorDetailsViewController: UIViewController {
 		fatalError("init(coder:) has not been implemented")
 	}
 
+	override func viewDidAppear(_ animated: Bool) {
+		super.viewDidAppear(animated)
+		photos.update()
+	}
+
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		self.view.backgroundColor = .white
@@ -358,11 +363,16 @@ extension ActorDetailsViewController {
 	}
 
 	func loadImagesForView(_ data: [Profile]) {
-//		for profile in data {
-//			NetworkManager.shared.loadImage(from: profile.filePath ?? "") { img in
-//				self.photos.setImage(img)
-//			}
-//		}
+		for profile in data {
+			NetworkManager.shared.loadImage(from: profile.filePath ?? "") { img in
+				DispatchQueue.main.async {
+					self.photos.setImage(img)
+				}
+			}
+		}
+		DispatchQueue.main.async {
+			self.photos.update()
+		}
 	}
 }
 
