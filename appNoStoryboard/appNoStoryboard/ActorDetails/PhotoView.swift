@@ -11,9 +11,10 @@ import SnapKit
 class PhotoView: UIView {
 
 	private var images: [UIImage] = []
+	private lazy var views = [imageView, imageView2, imageView3, imageView4]
 
 	private lazy var stackView: UIStackView = {
-		let stack = UIStackView(arrangedSubviews: [imageView, imageView2, imageView3, imageView4])
+		let stack = UIStackView()
 		stack.translatesAutoresizingMaskIntoConstraints = false
 		stack.axis = .horizontal
 		stack.distribution = .fillEqually
@@ -94,6 +95,7 @@ class PhotoView: UIView {
 extension PhotoView {
 
 	func setupView() {
+		self.addViewsInStack()
 		addSubview(stackView)
 		addSubview(imagesCountLabel)
 		stackView.snp.makeConstraints { make in
@@ -113,17 +115,19 @@ extension PhotoView {
 	}
 
 	func setImages() {
-		if images.count > 3 {
-			imageView.image = images[0]
-			imageView2.image = images[1]
-			imageView3.image = images[2]
-			imageView4.image = images[3]
+		if !images.isEmpty {
+			for i in 0..<images.count {
+				if i <= 3 {
+					self.views[i].image = images[i]
+				}
+			}
 		}
+		imagesCountLabel.text = "+\(images.count-4)"
 	}
 
-	func update() {
-		print(images.count)
-		imagesCountLabel.text = "+\(images.count)"
-		self.layoutIfNeeded()
+	func addViewsInStack() {
+		for item in views {
+			stackView.addArrangedSubview(item)
+		}
 	}
 }

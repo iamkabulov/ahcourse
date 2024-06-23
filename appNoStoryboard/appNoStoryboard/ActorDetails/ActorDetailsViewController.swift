@@ -245,7 +245,7 @@ class ActorDetailsViewController: UIViewController {
 
 	override func viewDidAppear(_ animated: Bool) {
 		super.viewDidAppear(animated)
-		photos.update()
+//		photos.update()
 	}
 
 	override func viewDidLoad() {
@@ -369,9 +369,6 @@ extension ActorDetailsViewController {
 					self.photos.setImage(img)
 				}
 			}
-		}
-		DispatchQueue.main.async {
-			self.photos.update()
 		}
 	}
 }
