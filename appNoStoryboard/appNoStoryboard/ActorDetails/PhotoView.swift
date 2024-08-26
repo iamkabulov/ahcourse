@@ -24,9 +24,15 @@ class PhotoView: UIView {
 		return stack
 	}()
 
+	//MARK: - Image and Spinner
+	private lazy var spinner: UIActivityIndicatorView = {
+		let spinner = UIActivityIndicatorView(style: .medium)
+		return spinner
+	}()
+
 	private lazy var imageView: UIImageView = {
 		let view = UIImageView()
-		view.image = UIImage(named: "movie")
+		view.image = UIImage(named: "whiteBackground")
 		view.translatesAutoresizingMaskIntoConstraints = false
 		view.contentMode = .scaleAspectFill
 		view.layer.cornerRadius = 4
@@ -38,7 +44,7 @@ class PhotoView: UIView {
 
 	private lazy var imageView2: UIImageView = {
 		let view = UIImageView()
-		view.image = UIImage(named: "movie")
+		view.image = UIImage(named: "whiteBackground")
 		view.translatesAutoresizingMaskIntoConstraints = false
 		view.contentMode = .scaleAspectFill
 		view.layer.cornerRadius = 4
@@ -50,7 +56,7 @@ class PhotoView: UIView {
 
 	private lazy var imageView3: UIImageView = {
 		let view = UIImageView()
-		view.image = UIImage(named: "movie")
+		view.image = UIImage(named: "whiteBackground")
 		view.translatesAutoresizingMaskIntoConstraints = false
 		view.contentMode = .scaleAspectFill
 		view.layer.cornerRadius = 4
@@ -62,7 +68,7 @@ class PhotoView: UIView {
 
 	private lazy var imageView4: UIImageView = {
 		let view = UIImageView()
-		view.image = UIImage(named: "movie")
+		view.image = UIImage(named: "whiteBackground")
 		view.translatesAutoresizingMaskIntoConstraints = false
 		view.contentMode = .scaleAspectFill
 		view.layer.cornerRadius = 4
@@ -84,6 +90,7 @@ class PhotoView: UIView {
 		super.init(frame: frame)
 //		backgroundColor = .red
 		setupView()
+		isLoading(true)
 	}
 	
 	required init?(coder: NSCoder) {
@@ -97,6 +104,7 @@ extension PhotoView {
 	func setupView() {
 		self.addViewsInStack()
 		addSubview(stackView)
+		addSubview(spinner)
 		addSubview(imagesCountLabel)
 		stackView.snp.makeConstraints { make in
 			make.top.bottom.equalToSuperview()
@@ -119,6 +127,7 @@ extension PhotoView {
 			for i in 0..<images.count {
 				if i <= 3 {
 					self.views[i].image = images[i]
+					isLoading(false)
 				}
 			}
 		}
@@ -128,6 +137,21 @@ extension PhotoView {
 	func addViewsInStack() {
 		for item in views {
 			stackView.addArrangedSubview(item)
+		}
+	}
+
+	func isLoading(_ value: Bool) {
+		if value {
+			spinner.startAnimating()
+			spinner.isHidden = false
+			spinner.snp.makeConstraints { make in
+				make.centerX.centerY.equalTo(imageView)
+				make.centerX.centerY.equalTo(imageView2)
+				make.centerX.centerY.equalTo(imageView3)
+			}
+		} else {
+			self.spinner.stopAnimating()
+			self.spinner.isHidden = true
 		}
 	}
 }
