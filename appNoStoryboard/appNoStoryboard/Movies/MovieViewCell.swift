@@ -90,7 +90,7 @@ final class MovieViewCell: UITableViewCell {
 	}
 
 	//MARK: - Methods
-	func setData(movie: List) {
+	func setData(movie: MovieList) {
 		titleLabel.text = movie.title
 		id = movie.id
 		path = movie.posterPath

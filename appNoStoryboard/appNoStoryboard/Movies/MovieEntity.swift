@@ -11,7 +11,7 @@ import Foundation
 struct MovieEntity: Codable {
 	let dates: Dates?
 	let page: Int
-	let results: [List]
+	let results: [MovieList]
 	let totalPages, totalResults: Int
 
 	enum CodingKeys: String, CodingKey {
@@ -23,7 +23,7 @@ struct MovieEntity: Codable {
 
 struct PopularMovieEntity: Codable {
 	let page: Int
-	let results: [List]?
+	let results: [MovieList]?
 	let totalPages, totalResults: Int
 
 	enum CodingKeys: String, CodingKey {
@@ -35,7 +35,7 @@ struct PopularMovieEntity: Codable {
 
 struct TopRated: Codable {
 	let page: Int?
-	let results: [List]?
+	let results: [MovieList]?
 	let totalPages, totalResults: Int?
 
 	enum CodingKeys: String, CodingKey {
@@ -52,7 +52,7 @@ struct Dates: Codable {
 }
 
 // MARK: - List
-struct List: Codable {
+struct MovieList: Codable {
 	let adult: Bool?
 	let backdropPath: String?
 	let genreIDS: [Int]?

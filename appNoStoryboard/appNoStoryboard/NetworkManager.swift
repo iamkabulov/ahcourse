@@ -27,7 +27,7 @@ class NetworkManager {
 
 
 
-	func getUpcomingMovies(completionHandler: @escaping ([List]) -> Void) {
+	func getUpcomingMovies(completionHandler: @escaping ([MovieList]) -> Void) {
 		self.urlComponent.path = "/3/movie/upcoming"
 
 		guard let requestUrl = self.urlComponent.url else { return }
@@ -46,7 +46,7 @@ class NetworkManager {
 		}.resume()
 	}
 
-	func getPopularMovies(completionHandler: @escaping ([List]) -> Void) {
+	func getPopularMovies(completionHandler: @escaping ([MovieList]) -> Void) {
 		self.urlComponent.path = "/3/movie/popular"
 		guard let requestUrl = urlComponent.url else { return }
 
@@ -65,7 +65,7 @@ class NetworkManager {
 		}.resume()
 	}
 
-	func getNowPlaying(completionHandler: @escaping ([List]) -> Void) {
+	func getNowPlaying(completionHandler: @escaping ([MovieList]) -> Void) {
 		self.urlComponent.path = "/3/movie/now_playing"
 
 		guard let requestUrl = self.urlComponent.url else { return }
@@ -84,7 +84,7 @@ class NetworkManager {
 		}.resume()
 	}
 
-	func getTopRated(completionHandler: @escaping ([List]) -> Void) {
+	func getTopRated(completionHandler: @escaping ([MovieList]) -> Void) {
 		self.urlComponent.path = "/3/movie/top_rated"
 
 		guard let requestUrl = self.urlComponent.url else { return }

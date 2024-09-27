@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B0370AEC2C7C9D0500DF0635 /* MoviesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0370AEB2C7C9D0500DF0635 /* MoviesViewModel.swift */; };
 		B05B6CF62BE9243F00309D50 /* MovieViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B05B6CF52BE9243F00309D50 /* MovieViewCell.swift */; };
 		B062667B2C22F33600BF90CC /* ImagesEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = B062667A2C22F33600BF90CC /* ImagesEntity.swift */; };
 		B075E6132C07809B002FFC15 /* ExternalIdsEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = B075E6122C07809B002FFC15 /* ExternalIdsEntity.swift */; };
@@ -41,6 +42,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B0370AEB2C7C9D0500DF0635 /* MoviesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviesViewModel.swift; sourceTree = "<group>"; };
 		B05B6CF52BE9243F00309D50 /* MovieViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieViewCell.swift; sourceTree = "<group>"; };
 		B062667A2C22F33600BF90CC /* ImagesEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesEntity.swift; sourceTree = "<group>"; };
 		B075E6122C07809B002FFC15 /* ExternalIdsEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalIdsEntity.swift; sourceTree = "<group>"; };
@@ -191,6 +193,7 @@
 				B05B6CF52BE9243F00309D50 /* MovieViewCell.swift */,
 				B0CD67152BEFC41D0041B703 /* MovieEntity.swift */,
 				B0FCE4692BF27B4300A4BBB5 /* ThemeCollectionViewCell.swift */,
+				B0370AEB2C7C9D0500DF0635 /* MoviesViewModel.swift */,
 			);
 			path = Movies;
 			sourceTree = "<group>";
@@ -282,6 +285,7 @@
 				B0D71DE62BDD532E009ACCD1 /* MoviesViewController.swift in Sources */,
 				B08F13F32C04D56A0050467A /* FavouritesViewController.swift in Sources */,
 				B0CCC5402C06503400291E99 /* MovieBarController.swift in Sources */,
+				B0370AEC2C7C9D0500DF0635 /* MoviesViewModel.swift in Sources */,
 				B08F13F62C05DF160050467A /* MoviesCoreData.xcdatamodeld in Sources */,
 				B05B6CF62BE9243F00309D50 /* MovieViewCell.swift in Sources */,
 				B0CB51742BFC747400B40A47 /* CastEntity.swift in Sources */,

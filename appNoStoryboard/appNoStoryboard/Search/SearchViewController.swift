@@ -10,7 +10,7 @@ import Lottie
 
 class SearchViewController: UIViewController {
 	//MARK: - Properties
-	private var movieData: [List] = []
+	private var movieData: [MovieList] = []
 	private var isSearched: Bool = false
 	private let networking = NetworkManager.shared
 

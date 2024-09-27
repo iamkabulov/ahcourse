@@ -141,7 +141,7 @@ extension FavouritesViewController: UITableViewDelegate, UITableViewDataSource {
 
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		guard let cell = self.tableView.dequeueReusableCell(withIdentifier: MovieViewCell.identifier, for: indexPath) as? MovieViewCell else { return UITableViewCell() }
-		cell.setData(movie: List(adult: true,
+		cell.setData(movie: MovieList(adult: true,
 								 backdropPath: nil,
 								 genreIDS: [],
 								 id: Int(favMovies[indexPath.row].id),
