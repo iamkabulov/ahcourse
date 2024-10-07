@@ -17,10 +17,8 @@ class MoviesViewController: UIViewController {
 
 	//MARK: - Properties
 	private var themes = ["Popular", "Now Playing", "Upcoming", "Top Rated"]
-//	var movieData: [MovieList] = []
-	private var isFavList: [Int] = []
-	private let networking = NetworkManager.shared
-	var index = IndexPath(item: 0, section: 0)
+	private var index = IndexPath(item: 0, section: 0)
+
 	private lazy var themeLabel: UILabel = {
 		let label = UILabel()
 		label.translatesAutoresizingMaskIntoConstraints = false
@@ -76,12 +74,6 @@ class MoviesViewController: UIViewController {
 		super.viewWillAppear(animated)
 		navigationController?.isNavigationBarHidden = true
 		themeCollectionView.selectItem(at: index, animated: false, scrollPosition: [])
-
-		MoviesCoreData.shared.loadNotes { data in
-			self.isFavList = data.map { item in
-				item.id
-			}
-		}
 		self.tableView.reloadData()
 	}
 
@@ -100,8 +92,6 @@ class MoviesViewController: UIViewController {
 		self.themeCollectionView.allowsMultipleSelection = false
 		self.bindViewModel()
 	}
-
-
 }
 
 //MARK: - TableView
@@ -133,23 +123,10 @@ extension MoviesViewController {
 	}
 
 	func bindViewModel() {
-
-		viewModel.$state
+		viewModel.$model
 			.receive(on: DispatchQueue.main)
-			.sink { [weak self] state in
-				switch state {
-				case .loading:
-					//skeleton sdelat'
-					print("TODO")
-				case .success:
-					self?.tableView.reloadData()
-				case .failed:
-					//TODO: -
-					print("TODO")
-				case .none:
-					//TODO: -
-					print("TODO")
-				}
+			.sink { [weak self] _ in
+				self?.tableView.reloadData()
 			}
 			.store(in: &anyCanccelables)
 	}
@@ -162,32 +139,15 @@ extension MoviesViewController: UITableViewDelegate, UITableViewDataSource {
 	
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		guard let cell = self.tableView.dequeueReusableCell(withIdentifier: MovieViewCell.identifier, for: indexPath) as? MovieViewCell else { return UITableViewCell() }
-
-		cell.setData(movie: viewModel.model[indexPath.row])
-		if isFavList.isEmpty {
-			cell.isFav(false)
-		} else {
-			let _ = isFavList.filter { id in
-				if viewModel.model[indexPath.row].id == id {
-					cell.isFav(true)
-				}
-				return false
-			}
-		}
+		cell.configure(with: MoviesCellViewModel(movie: viewModel.model[indexPath.row]))
 		return cell
 	}
 
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-		let detailView = MovieDetailsViewController(id: viewModel.model[indexPath.row].id ?? 0)
+		let detailView = MovieDetailsViewController(id: viewModel.model[indexPath.row].id)
 		self.navigationController?.pushViewController(detailView, animated: true)
 	}
 }
-
-//MARK: - API
-extension MoviesViewController {
-
-}
-
 
 //MARK: - CollectionView
 extension MoviesViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
@@ -207,6 +167,7 @@ extension MoviesViewController: UICollectionViewDelegate, UICollectionViewDataSo
 
 	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		if let cell = collectionView.cellForItem(at: indexPath) as? CollectionViewCell {
+			viewModel.model = []
 			cell.contentView.backgroundColor = .red
 			cell.isSelected = true
 			cell.nameOfButton.textColor = .white

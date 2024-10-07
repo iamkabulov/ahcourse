@@ -132,10 +132,10 @@ extension WatchListViewController: UITableViewDelegate, UITableViewDataSource {
 		NetworkManager.shared.getDetailInfo(id: watchList[indexPath.row]) { data in
 			DispatchQueue.main.async {
 				cell.setData(title: data.title ?? "")
-				cell.setImage(img: nil)
+//				cell.setImage(img: nil)//TODO: - make it in
 				NetworkManager.shared.loadImage(from: data.posterPath ?? "") { image in
 					DispatchQueue.main.async {
-						cell.setImage(img: image)
+//						cell.setImage(img: image)//TODO: - make it in
 					}
 				}
 			}

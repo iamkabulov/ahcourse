@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Combine
 
 
 final class MovieViewCell: UITableViewCell {
@@ -15,6 +16,8 @@ final class MovieViewCell: UITableViewCell {
 	}
 	weak var favView: IFavouritesView?
 	private let networking = NetworkManager.shared
+	private var cancellables = Set<AnyCancellable>()
+	private var viewModel: MoviesCellViewModel?
 	static let rowHeight: CGFloat = 460
 	private var id: Int?
 	private var path: String?
@@ -91,17 +94,60 @@ final class MovieViewCell: UITableViewCell {
 
 	//MARK: - Methods
 	func setData(movie: MovieList) {
+		//TODO: - delete after complete MVVM combine arch
 		titleLabel.text = movie.title
 		id = movie.id
 		path = movie.posterPath
-		setImage(img: nil)
+//		setImage(img: nil) //TODO: - make it in
 		networking.loadImage(from: movie.posterPath ?? "" ) { img in
 			if self.path == movie.posterPath {
 				DispatchQueue.main.async {
-					self.setImage(img: img)
+//					self.setImage(img: img) //TODO: - make it in
 				}
 			}
 		}
+	}
+
+	func configure(with viewModel: MoviesCellViewModel) {
+
+		self.viewModel = viewModel
+		viewModel.$state
+			.receive(on: DispatchQueue.main)
+			.sink { [weak self] state in
+				switch state {
+				case .loading, .none, .failed:
+					self?.spinnerEnabled(state: state)
+				case .success:
+					self?.spinnerEnabled(state: state)
+				}
+			}
+			.store(in: &cancellables)
+
+		viewModel.$image
+			.receive(on: DispatchQueue.main)
+			.compactMap { $0 }
+			.sink { img in
+				self.setImage(data: img)
+			}
+			.store(in: &cancellables)
+
+		viewModel.$title
+			.compactMap { $0 }
+			.assign(to: \.text, on: titleLabel)
+			.store(in: &cancellables)
+
+		viewModel.$isFav
+			.sink { [weak self] isFav in
+				self?.addToFavouriteButton.setImage(
+					UIImage(named: isFav ? "fstar" : "ustar"),
+					for: .normal
+				)
+			}
+			.store(in: &cancellables)
+	}
+
+	func setImage(data: UIImage) {
+		movieImage.image = data
 	}
 
 	func setData(title id: String) {
@@ -116,21 +162,16 @@ final class MovieViewCell: UITableViewCell {
 		}
 	}
 
-	func setImage(img: UIImage?) {
-		guard let img = img else {
-			contentView.addSubview(spinner)
+	func spinnerEnabled(state: ViewStates) {
+		switch state {
+		case .loading, .none, .failed:
 			spinner.startAnimating()
 			spinner.isHidden = false
-			spinner.centerXAnchor.constraint(equalTo: stackView.centerXAnchor).isActive = true
-			spinner.heightAnchor.constraint(equalToConstant: Spacing.Size.height).isActive = true
-			spinner.centerYAnchor.constraint(equalTo: stackView.centerYAnchor).isActive = true
-			contentView.layoutIfNeeded()
-			return
+		case .success:
+			self.spinner.stopAnimating()
+			self.spinner.isHidden = true
 		}
-		self.spinner.stopAnimating()
-		self.spinner.isHidden = true
-		self.movieImage.image = img
-		self.contentView.layoutIfNeeded()
+
 	}
 
 	func hideFavButton() {
@@ -142,6 +183,7 @@ final class MovieViewCell: UITableViewCell {
 private extension MovieViewCell {
 	func setupLayout() {
 		contentView.addSubview(stackView)
+		contentView.addSubview(spinner)
 		NSLayoutConstraint.activate([
 			stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Spacing.large),
 			stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
@@ -150,21 +192,16 @@ private extension MovieViewCell {
 			movieImage.heightAnchor.constraint(lessThanOrEqualToConstant: Spacing.Size.height),
 			movieImage.widthAnchor.constraint(equalToConstant: Spacing.Size.width),
 			addToFavouriteButton.topAnchor.constraint(equalTo: movieImage.topAnchor, constant: 10),
-			addToFavouriteButton.trailingAnchor.constraint(equalTo: movieImage.trailingAnchor, constant: -10)
+			addToFavouriteButton.trailingAnchor.constraint(equalTo: movieImage.trailingAnchor, constant: -10),
+
+			spinner.centerXAnchor.constraint(equalTo: stackView.centerXAnchor),
+			spinner.heightAnchor.constraint(equalToConstant: Spacing.Size.height),
+			spinner.centerYAnchor.constraint(equalTo: stackView.centerYAnchor)
 		])
 	}
 
 	@objc func addToFav(_ sender: UIButton) {
-		guard let title = titleLabel.text, let id = self.id, let path = self.path else { return }
-		if sender.image(for: .normal) == UIImage(named: "fstar") {
-			MoviesCoreData.shared.deleteNote(id: id)
-			addToFavouriteButton.setImage(UIImage(named: "ustar"), for: .normal)
-		} else if sender.image(for: .normal) == UIImage(named: "ustar") {
-			let note = FavouriteMovies(id: id, title: title, posterPath: path)
-			MoviesCoreData.shared.saveNote(note)
-			addToFavouriteButton.setImage(UIImage(named: "fstar"), for: .normal)
-		}
-		guard let favView = favView else { return }
-		favView.buttonTapped?()
+		guard let vm = self.viewModel else { return }
+		vm.toggleFavorite()
 	}
 }

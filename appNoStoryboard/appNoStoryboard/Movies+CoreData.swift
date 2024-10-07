@@ -92,12 +92,27 @@ extension MoviesCoreData {
 			let results = try context.fetch(fetchRequest)
 			if let note = results.first {
 //				FavouriteMovies(id: note.id, title: note.title, poster: note.poster)
-				print(note)
+//				print(note)
 				return note
 			}
 		} catch {
 			fatalError("Unresolved fetching note error \(error)")
 		}
 		return nil
+	}
+
+	func isFav(by id: Int) -> Bool {
+		let fetchRequest = Favourite.fetchRequest()
+		fetchRequest.predicate = NSPredicate(format: "id == %@", NSNumber(value: id)) ///можно и строкой "\(id)"
+
+		do {
+			let results = try context.fetch(fetchRequest)
+			if let note = results.first {
+				return true
+			}
+		} catch {
+			fatalError("Unresolved fetching note error \(error)")
+		}
+		return false
 	}
 }
