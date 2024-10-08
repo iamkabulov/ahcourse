@@ -97,29 +97,26 @@ final class MovieViewCell: UITableViewCell {
 		viewModel.$state
 			.receive(on: DispatchQueue.main)
 			.sink { [weak self] state in
-				switch state {
-				case .loading, .none, .failed:
-					self?.spinnerEnabled(state: state)
-				case .success:
-					self?.spinnerEnabled(state: state)
-				}
+				self?.spinnerEnabled(state: state)
 			}
 			.store(in: &cancellables)
 
 		viewModel.$image
 			.receive(on: DispatchQueue.main)
 			.compactMap { $0 }
-			.sink { img in
-				self.setImage(data: img)
+			.sink { [weak self] img in
+				self?.setImage(data: img)
 			}
 			.store(in: &cancellables)
 
 		viewModel.$title
+			.receive(on: DispatchQueue.main)
 			.compactMap { $0 }
 			.assign(to: \.text, on: titleLabel)
 			.store(in: &cancellables)
 
 		viewModel.$isFav
+			.receive(on: DispatchQueue.main)
 			.sink { [weak self] isFav in
 				self?.addToFavouriteButton.setImage(
 					UIImage(named: isFav ? "fstar" : "ustar"),
@@ -137,28 +134,21 @@ final class MovieViewCell: UITableViewCell {
 		titleLabel.text = id
 	}
 
-	func isFav(_ value: Bool) {
-		if value {
-			addToFavouriteButton.setImage(UIImage(named: "fstar"), for: .normal)
-		} else {
-			addToFavouriteButton.setImage(UIImage(named: "ustar"), for: .normal)
-		}
-	}
-
 	func spinnerEnabled(state: ViewStates) {
-		switch state {
-		case .loading, .none, .failed:
+		if state == .loading && !spinner.isAnimating {
 			spinner.startAnimating()
-			spinner.isHidden = false
-		case .success:
-			self.spinner.stopAnimating()
-			self.spinner.isHidden = true
+		} else if state != .loading && spinner.isAnimating {
+			spinner.stopAnimating()
 		}
-
 	}
 
 	func hideFavButton() {
 		addToFavouriteButton.isHidden = true
+	}
+
+	deinit {
+		cancellables.removeAll()
+		print("DEINITED MOVIES CELL VIEW CONTROLLER")
 	}
 }
 

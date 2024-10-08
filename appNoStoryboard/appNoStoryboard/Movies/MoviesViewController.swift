@@ -12,7 +12,7 @@ class MoviesViewController: UIViewController {
 	
 	//MARK: - ViewModel
 	var viewModel = MoviesViewModel()
-	var anyCanccelables = Set<AnyCancellable>()
+	var anyCancellables = Set<AnyCancellable>()
 
 
 	//MARK: - Properties
@@ -73,7 +73,7 @@ class MoviesViewController: UIViewController {
 		super.viewWillAppear(animated)
 		navigationController?.isNavigationBarHidden = true
 		themeCollectionView.selectItem(at: index, animated: false, scrollPosition: [])
-		self.tableView.reloadData()
+//		self.tableView.reloadData() TODO: - Тут не знаю зачем было это обновление
 	}
 
 	override func viewDidDisappear(_ animated: Bool) {
@@ -90,6 +90,11 @@ class MoviesViewController: UIViewController {
 		self.setupView()
 		self.themeCollectionView.allowsMultipleSelection = false
 		self.bindViewModel()
+	}
+
+	deinit {
+		anyCancellables.removeAll()
+		print("DEINITED MOVIES VIEW CONTROLLER")
 	}
 }
 
@@ -127,7 +132,7 @@ extension MoviesViewController {
 			.sink { [weak self] _ in
 				self?.tableView.reloadData()
 			}
-			.store(in: &anyCanccelables)
+			.store(in: &anyCancellables)
 	}
 }
 
