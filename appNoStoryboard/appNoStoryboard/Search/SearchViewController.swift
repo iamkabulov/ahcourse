@@ -160,7 +160,7 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
 
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		guard let cell = self.tableView.dequeueReusableCell(withIdentifier: MovieViewCell.identifier, for: indexPath) as? MovieViewCell else { return UITableViewCell() }
-		cell.setData(movie: movieData[indexPath.row])
+//		cell.setData(movie: movieData[indexPath.row]) TODO: - FIX IT
 		cell.hideFavButton()
 		return cell
 	}

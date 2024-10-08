@@ -16,7 +16,6 @@ class MoviesViewController: UIViewController {
 
 
 	//MARK: - Properties
-	private var themes = ["Popular", "Now Playing", "Upcoming", "Top Rated"]
 	private var index = IndexPath(item: 0, section: 0)
 
 	private lazy var themeLabel: UILabel = {
@@ -152,12 +151,12 @@ extension MoviesViewController: UITableViewDelegate, UITableViewDataSource {
 //MARK: - CollectionView
 extension MoviesViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-		themes.count
+		viewModel.themes.count
 	}
 
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 		guard let cell = self.themeCollectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.identifier, for: indexPath) as? CollectionViewCell else { return UICollectionViewCell() }
-		cell.nameOfButton.text = themes[indexPath.row]
+		cell.nameOfButton.text = viewModel.themes[indexPath.row]
 		return cell
 	}
 

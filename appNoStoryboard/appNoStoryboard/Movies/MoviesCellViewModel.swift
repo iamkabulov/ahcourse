@@ -28,9 +28,20 @@ final class MoviesCellViewModel {
 		self.id = movie.id
 		self.path = movie.posterPath
 		self.isFav = coreData.isFav(by: movie.id)
+		self.getImage(path: movie.posterPath ?? "")
+	}
 
+	init(favMovie: FavouriteMovies) {
+		self.title = favMovie.title
+		self.id = favMovie.id
+		self.path = favMovie.posterPath
+		self.isFav = coreData.isFav(by: favMovie.id)
+		self.getImage(path: favMovie.posterPath)
+	}
+
+	func getImage(path: String) {
 		state = .loading
-		networking.loadImage(from: movie.posterPath ?? "") { img in
+		networking.loadImage(from: path) { img in
 			self.image = img
 			self.state = .success
 		}

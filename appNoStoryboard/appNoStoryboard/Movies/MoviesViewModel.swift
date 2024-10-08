@@ -19,6 +19,7 @@ class MoviesViewModel {
 	private let networking = NetworkManager.shared
 
 	@Published var model: [MovieList] = []
+	let themes = ["Popular", "Now Playing", "Upcoming", "Top Rated"]
 
 	func loadMovies(_ path: String) {
 		switch path {

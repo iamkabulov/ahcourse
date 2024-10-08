@@ -6,15 +6,12 @@
 //
 
 import UIKit
-protocol IFavouritesView: AnyObject
-{
-	var buttonTapped: (() -> Void)? { get set }
-}
+import Combine
 
 final class FavouritesViewController: UIViewController {
-	//MARK: - properties
-	private var favMovies: [FavouriteMovies] = []
-	internal var buttonTapped: (() -> Void)?
+	//MARK: - ViewModel
+	var viewModel = FavouritesViewModel()
+	var anyCanccelables = Set<AnyCancellable>()
 
 	//MARK: - Labels
 	lazy var titleLabel: UILabel = {
@@ -73,27 +70,28 @@ final class FavouritesViewController: UIViewController {
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		navigationController?.isNavigationBarHidden = true
-		MoviesCoreData.shared.loadNotes { [self] data in
-			self.favMovies = data
-			isEmptyViewSetup()
-		}
-		buttonTapped = {
-			MoviesCoreData.shared.loadNotes { [self] data in
-				self.favMovies = data
-				isEmptyViewSetup()
-			}
-		}
+		viewModel.getFavMovies()
 	}
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		view.backgroundColor = .systemBackground
 		setupView()
+		bindViewModel()
+	}
+
+	func bindViewModel() {
+		viewModel.$favMovies
+			.receive(on: DispatchQueue.main)
+			.sink { [weak self] data in
+				self?.isEmptyViewSetup()
+			}
+			.store(in: &anyCanccelables)
 	}
 }
 
 //MARK: - TableView
-extension FavouritesViewController: IFavouritesView {
+extension FavouritesViewController {
 	//MARK: - View Setup
 	func setupView() {
 		self.view.addSubview(self.titleLabel)
@@ -119,7 +117,7 @@ extension FavouritesViewController: IFavouritesView {
 
 	func isEmptyViewSetup() {
 		self.tableView.reloadData()
-		if favMovies.isEmpty {
+		if viewModel.favMovies.isEmpty {
 			tableView.isHidden = true
 			noFavouriteImage.isHidden = false
 			noFavLabel.isHidden = false
@@ -136,32 +134,17 @@ extension FavouritesViewController: IFavouritesView {
 //MARK: - TableViewDelegate
 extension FavouritesViewController: UITableViewDelegate, UITableViewDataSource {
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		favMovies.count
+		viewModel.favMovies.count
 	}
 
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		guard let cell = self.tableView.dequeueReusableCell(withIdentifier: MovieViewCell.identifier, for: indexPath) as? MovieViewCell else { return UITableViewCell() }
-		cell.setData(movie: MovieList(adult: true,
-								 backdropPath: nil,
-								 genreIDS: [],
-								 id: Int(favMovies[indexPath.row].id),
-								 originalLanguage: "",
-								 originalTitle: "",
-								 overview: "",
-								 popularity: 2.0, 
-								 posterPath: favMovies[indexPath.row].posterPath,
-								 releaseDate: "",
-								 title: favMovies[indexPath.row].title,
-								 video: false,
-								 voteAverage: 2.9,
-								 voteCount: 1))
-		cell.isFav(true)
-		cell.favView = self
+		cell.configure(with: MoviesCellViewModel(favMovie: viewModel.favMovies[indexPath.row]))
 		return cell
 	}
 
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-		let detailView = MovieDetailsViewController(id: favMovies[indexPath.row].id)
+		let detailView = MovieDetailsViewController(id: viewModel.favMovies[indexPath.row].id)
 		self.navigationController?.pushViewController(detailView, animated: true)
 	}
 }

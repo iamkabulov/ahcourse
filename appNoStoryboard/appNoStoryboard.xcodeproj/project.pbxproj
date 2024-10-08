@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B0370AEC2C7C9D0500DF0635 /* MoviesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0370AEB2C7C9D0500DF0635 /* MoviesViewModel.swift */; };
+		B040921F2CB54E390021C527 /* FavouritesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B040921E2CB54E390021C527 /* FavouritesViewModel.swift */; };
 		B04B5A042CB3E48C009AB0A4 /* MoviesCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04B5A032CB3E48C009AB0A4 /* MoviesCellViewModel.swift */; };
 		B05B6CF62BE9243F00309D50 /* MovieViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B05B6CF52BE9243F00309D50 /* MovieViewCell.swift */; };
 		B062667B2C22F33600BF90CC /* ImagesEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = B062667A2C22F33600BF90CC /* ImagesEntity.swift */; };
@@ -44,6 +45,7 @@
 
 /* Begin PBXFileReference section */
 		B0370AEB2C7C9D0500DF0635 /* MoviesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviesViewModel.swift; sourceTree = "<group>"; };
+		B040921E2CB54E390021C527 /* FavouritesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavouritesViewModel.swift; sourceTree = "<group>"; };
 		B04B5A032CB3E48C009AB0A4 /* MoviesCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviesCellViewModel.swift; sourceTree = "<group>"; };
 		B05B6CF52BE9243F00309D50 /* MovieViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieViewCell.swift; sourceTree = "<group>"; };
 		B062667A2C22F33600BF90CC /* ImagesEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesEntity.swift; sourceTree = "<group>"; };
@@ -113,6 +115,7 @@
 			children = (
 				B08F13F22C04D56A0050467A /* FavouritesViewController.swift */,
 				B075E6192C09167C002FFC15 /* FavouriteMovieEntity.swift */,
+				B040921E2CB54E390021C527 /* FavouritesViewModel.swift */,
 			);
 			path = Favourites;
 			sourceTree = "<group>";
@@ -285,6 +288,7 @@
 				B0FCE4702BF5030200A4BBB5 /* MovieDetailsViewController.swift in Sources */,
 				B075E6132C07809B002FFC15 /* ExternalIdsEntity.swift in Sources */,
 				B0CCC53E2C064BE400291E99 /* ImageCache.swift in Sources */,
+				B040921F2CB54E390021C527 /* FavouritesViewModel.swift in Sources */,
 				B0D71DE62BDD532E009ACCD1 /* MoviesViewController.swift in Sources */,
 				B08F13F32C04D56A0050467A /* FavouritesViewController.swift in Sources */,
 				B0CCC5402C06503400291E99 /* MovieBarController.swift in Sources */,

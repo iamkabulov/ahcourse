@@ -14,7 +14,7 @@ final class MovieViewCell: UITableViewCell {
 	static var identifier: String {
 		return String(describing: self)
 	}
-	weak var favView: IFavouritesView?
+	
 	private let networking = NetworkManager.shared
 	private var cancellables = Set<AnyCancellable>()
 	private var viewModel: MoviesCellViewModel?
@@ -92,24 +92,7 @@ final class MovieViewCell: UITableViewCell {
 		fatalError("init(coder:) has not been implemented")
 	}
 
-	//MARK: - Methods
-	func setData(movie: MovieList) {
-		//TODO: - delete after complete MVVM combine arch
-		titleLabel.text = movie.title
-		id = movie.id
-		path = movie.posterPath
-//		setImage(img: nil) //TODO: - make it in
-		networking.loadImage(from: movie.posterPath ?? "" ) { img in
-			if self.path == movie.posterPath {
-				DispatchQueue.main.async {
-//					self.setImage(img: img) //TODO: - make it in
-				}
-			}
-		}
-	}
-
 	func configure(with viewModel: MoviesCellViewModel) {
-
 		self.viewModel = viewModel
 		viewModel.$state
 			.receive(on: DispatchQueue.main)
