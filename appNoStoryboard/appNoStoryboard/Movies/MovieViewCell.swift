@@ -105,7 +105,7 @@ final class MovieViewCell: UITableViewCell {
 			.receive(on: DispatchQueue.main)
 			.compactMap { $0 }
 			.sink { [weak self] img in
-				self?.setImage(data: img)
+				self?.movieImage.image = img
 			}
 			.store(in: &cancellables)
 
@@ -118,20 +118,16 @@ final class MovieViewCell: UITableViewCell {
 		viewModel.$isFav
 			.receive(on: DispatchQueue.main)
 			.sink { [weak self] isFav in
+				guard let isFav = isFav else {
+					self?.hideFavButton()
+					return
+				}
 				self?.addToFavouriteButton.setImage(
 					UIImage(named: isFav ? "fstar" : "ustar"),
 					for: .normal
 				)
 			}
 			.store(in: &cancellables)
-	}
-
-	func setImage(data: UIImage) {
-		movieImage.image = data
-	}
-
-	func setData(title id: String) {
-		titleLabel.text = id
 	}
 
 	func spinnerEnabled(state: ViewStates) {
@@ -142,7 +138,7 @@ final class MovieViewCell: UITableViewCell {
 		}
 	}
 
-	func hideFavButton() {
+	private func hideFavButton() {
 		addToFavouriteButton.isHidden = true
 	}
 

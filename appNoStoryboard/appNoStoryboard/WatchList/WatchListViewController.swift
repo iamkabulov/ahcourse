@@ -6,9 +6,13 @@
 //
 
 import UIKit
+import Combine
 
 final class WatchListViewController: UIViewController {
-	private var watchList: [Int] = []
+	
+	//MARK: - ViewModel
+	var viewModel = WatchListViewModel()
+	var anyCancellables = Set<AnyCancellable>()
 
 	//MARK: - Labels
 	lazy var titleLabel: UILabel = {
@@ -67,15 +71,23 @@ final class WatchListViewController: UIViewController {
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		navigationController?.isNavigationBarHidden = true
-		guard let ids = WatchListUserDefaults.shared.getMovies() else { return }
-		watchList = ids
-		isEmptyViewSetup()
+		viewModel.getFavMovies()
 	}
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		view.backgroundColor = .systemBackground
 		setupView()
+		bind()
+	}
+
+	func bind() {
+		viewModel.$watchList
+			.receive(on: DispatchQueue.main)
+			.sink { [weak self] _ in
+				self?.isEmptyViewSetup()
+			}
+			.store(in: &anyCancellables)
 	}
 }
 
@@ -106,7 +118,7 @@ extension WatchListViewController {
 
 	func isEmptyViewSetup() {
 		self.tableView.reloadData()
-		if watchList.isEmpty {
+		if viewModel.watchList.isEmpty {
 			tableView.isHidden = true
 			noFavouriteImage.isHidden = false
 			noFavLabel.isHidden = false
@@ -124,29 +136,17 @@ extension WatchListViewController {
 //MARK: - TableViewDelegate
 extension WatchListViewController: UITableViewDelegate, UITableViewDataSource {
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		watchList.count
+		viewModel.watchList.count
 	}
 
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		guard let cell = self.tableView.dequeueReusableCell(withIdentifier: MovieViewCell.identifier, for: indexPath) as? MovieViewCell else { return UITableViewCell() }
-		NetworkManager.shared.getDetailInfo(id: watchList[indexPath.row]) { data in
-			DispatchQueue.main.async {
-				cell.setData(title: data.title ?? "")
-//				cell.setImage(img: nil)//TODO: - make it in
-				NetworkManager.shared.loadImage(from: data.posterPath ?? "") { image in
-					DispatchQueue.main.async {
-//						cell.setImage(img: image)//TODO: - make it in
-					}
-				}
-			}
-		}
-
-		cell.hideFavButton()
+		cell.configure(with: MoviesCellViewModel(id: viewModel.watchList[indexPath.row]))
 		return cell
 	}
 
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-		let detailView = MovieDetailsViewController(id: watchList[indexPath.row])
+		let detailView = MovieDetailsViewController(id: viewModel.watchList[indexPath.row])
 		self.navigationController?.pushViewController(detailView, animated: true)
 	}
 }

@@ -160,13 +160,12 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
 
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		guard let cell = self.tableView.dequeueReusableCell(withIdentifier: MovieViewCell.identifier, for: indexPath) as? MovieViewCell else { return UITableViewCell() }
-//		cell.setData(movie: movieData[indexPath.row]) TODO: - FIX IT
-		cell.hideFavButton()
+		cell.configure(with: MoviesCellViewModel(movie: movieData[indexPath.row]))
 		return cell
 	}
 
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-		let detailView = MovieDetailsViewController(id: movieData[indexPath.row].id ?? 0)
+		let detailView = MovieDetailsViewController(id: movieData[indexPath.row].id)
 		self.navigationController?.pushViewController(detailView, animated: true)
 		tableView.deselectRow(at: indexPath, animated: true)
 	}

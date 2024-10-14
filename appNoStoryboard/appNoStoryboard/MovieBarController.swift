@@ -32,7 +32,7 @@ final class MovieBarController: UITabBarController {
 		findController.tabBarItem = UITabBarItem(title: "Find", image: UIImage(systemName: "magnifyingglass"), selectedImage: nil)
 		profileController.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person.crop.circle"), selectedImage: nil)
 		
-		let tabBarList = [homeNav, favNav, watchNav, searchNav, profileController]
+		let tabBarList = [homeNav, favNav, watchNav, searchNav]
 		self.viewControllers = tabBarList
 	}
 

@@ -15,13 +15,12 @@ final class MoviesCellViewModel {
 	private let coreData = MoviesCoreData.shared
 	private var cancellables = Set<AnyCancellable>()
 
-	@Published var title: String
-	@Published var isFav: Bool
+	@Published var title: String?
+	@Published var isFav: Bool?
 	@Published var image: UIImage?
 	@Published var state: ViewStates = .none
 	var id: Int?
 	var path: String?
-
 
 	init(movie: MovieList) {
 		self.title = movie.title ?? ""
@@ -39,6 +38,11 @@ final class MoviesCellViewModel {
 		self.getImage(path: favMovie.posterPath)
 	}
 
+	init(id: Int) {
+		self.id = id
+		self.loadMovieInfo(id: id)
+	}
+
 	func getImage(path: String) {
 		state = .loading
 		networking.loadImage(from: path) { img in
@@ -53,10 +57,18 @@ final class MoviesCellViewModel {
 			coreData.deleteNote(id: id)
 		} else {
 			let note = FavouriteMovies(id: id,
-									   title: title,
+									   title: title ?? "",
 									   posterPath: path)
 			coreData.saveNote(note)
 		}
 		self.isFav = coreData.isFav(by: id)
+	}
+
+
+	func loadMovieInfo(id: Int) {
+		networking.getDetailInfo(id: id) { data in
+			self.title = data.title
+			self.getImage(path: data.posterPath ?? "")
+		}
 	}
 }
