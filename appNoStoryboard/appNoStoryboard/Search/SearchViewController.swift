@@ -6,11 +6,13 @@
 //
 
 import UIKit
+import Combine
 import Lottie
 
 class SearchViewController: UIViewController {
 	//MARK: - Properties
-	private var movieData: [MovieList] = []
+	private var viewModel = SearchViewModel()
+	private var anyCancellables = Set<AnyCancellable>()
 	private var isSearched: Bool = false
 	private let networking = NetworkManager.shared
 
@@ -86,14 +88,7 @@ class SearchViewController: UIViewController {
 		super.viewWillAppear(animated)
 		navigationController?.isNavigationBarHidden = true
 		if !isSearched {
-			self.hideRecommendedList(false)
-			self.networking.recommendationList() { data in
-				self.movieData = data.results ?? []
-				DispatchQueue.main.async {
-					self.showNotFound(!self.movieData.isEmpty)
-					self.tableView.reloadData()
-				}
-			}
+			self.viewModel.getRecommendationList()
 		}
 	}
 
@@ -110,18 +105,30 @@ class SearchViewController: UIViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		self.view.backgroundColor = .systemBackground
-		self.addView()
 		self.setupView()
+		self.bind()
 	}
 
+	func bind() {
+		viewModel.$searchResult
+			.receive(on: DispatchQueue.main)
+			.sink { [weak self] data in
+				if data.isEmpty {
+					self?.hideNotFoundView(false)
+					self?.hideRecommendedList(true)
+				} else {
+					self?.hideNotFoundView(true)
+					self?.hideRecommendedList(false)
+				}
+				self?.tableView.reloadData()
+			}
+			.store(in: &anyCancellables)
+	}
 
 }
 
 //MARK: - TableView
 extension SearchViewController {
-	func addView() {
-
-	}
 
 	func setupView() {
 		self.view.addSubview(self.titleLabel)
@@ -155,17 +162,17 @@ extension SearchViewController {
 
 extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		movieData.count
+		viewModel.searchResult.count
 	}
 
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		guard let cell = self.tableView.dequeueReusableCell(withIdentifier: MovieViewCell.identifier, for: indexPath) as? MovieViewCell else { return UITableViewCell() }
-		cell.configure(with: MoviesCellViewModel(movie: movieData[indexPath.row]))
+		cell.configure(with: MoviesCellViewModel(movie: viewModel.searchResult[indexPath.row]))
 		return cell
 	}
 
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-		let detailView = MovieDetailsViewController(id: movieData[indexPath.row].id)
+		let detailView = MovieDetailsViewController(id: viewModel.searchResult[indexPath.row].id)
 		self.navigationController?.pushViewController(detailView, animated: true)
 		tableView.deselectRow(at: indexPath, animated: true)
 	}
@@ -176,32 +183,12 @@ extension SearchViewController: UITextFieldDelegate {
 
 	func textFieldShouldReturn(_ textField: UITextField) -> Bool {
 		guard let title = textField.text else { return true }
-		if title == "" {
-			networking.recommendationList() { data in
-				self.movieData = data.results ?? []
-				DispatchQueue.main.async {
-					self.showNotFound(!self.movieData.isEmpty)
-					self.hideRecommendedList(false)
-					self.tableView.reloadData()
-				}
-			}
-		} else {
-			networking.searchByName(title) { result in
-				self.movieData = result.results ?? []
-				DispatchQueue.main.async { [self] in
-					self.showNotFound(!movieData.isEmpty)
-					self.hideRecommendedList(true)
-					self.tableView.reloadData()
-
-				}
-			}
-		}
-
+		self.viewModel.searchBy(title: title)
 		textField.resignFirstResponder()
 		return true
 	}
 
-	func showNotFound(_ value: Bool) {
+	func hideNotFoundView(_ value: Bool) {
 		notFoundImage.isHidden = value
 		infoLabel.isHidden = value
 	}
